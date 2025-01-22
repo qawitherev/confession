@@ -10,7 +10,7 @@ class UserController {
 
     if (!username || !nickname || !hashedPassword) {
       return res
-        .status(409)
+        .status(400)
         .json(
           ResponseHandler.error(
             `Username, nickname and password cannot be empty`,
@@ -29,7 +29,7 @@ class UserController {
         .status(200)
         .json(ResponseHandler.success(`Sign up success`, 200, user));
     } catch (err) {
-      return res.status(500).json(ResponseHandler.error(err.message, 500, err));
+      return res.status(err.statusCode).json(ResponseHandler.error(err.message, err.statusCode, err));
     }
   };
 
@@ -39,6 +39,9 @@ class UserController {
         const loginUser = await this.userService.login(username, hashedPassword);
         return res.status(200).json(ResponseHandler.success(`Login success`, 200, loginUser))
     } catch (err) {
+        if(err.statusCode === 401) {
+          return res.status(err.statusCode).json(ResponseHandler.error(err.message, err.statusCode, err)); 
+        }
         return res.status(500).json(ResponseHandler.error(err.message, 500, err))
     }
   }

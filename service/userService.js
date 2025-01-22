@@ -9,7 +9,9 @@ class UserService {
         try {
             const existingUser = await this.userRepository.getUserByUsername(username); 
             if(existingUser) {
-                throw new Error(`User with username ${username} already exist`);
+                const err  = new Error(`User with username ${username} already exist`)
+                err.statusCode = 409;
+                throw err;
             }
 
             let userTypeId = await this.userRepository.getUserTypeId('User');
@@ -23,7 +25,9 @@ class UserService {
                 username: username
             };
         } catch (err) {
-            throw err;
+            const error = new Error(err.message); 
+            error.statusCode = 500; 
+            throw error;
         }
     }
 
@@ -31,7 +35,9 @@ class UserService {
         try {
             const loginUser = await this.userRepository.getUserByUsernameAndPassword(username, hashedPassword); 
             if (!loginUser) {
-                throw new Error(`Invalid username or password`); 
+                const error = new Error('Invalid username or password');
+                error.statusCode = 401; 
+                throw error; 
             }
             const { id } = loginUser;
             const userForToken = {id: id, username: username}
