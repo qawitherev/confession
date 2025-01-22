@@ -25,9 +25,7 @@ class UserService {
                 username: username
             };
         } catch (err) {
-            const error = new Error(err.message); 
-            error.statusCode = 500; 
-            throw error;
+            throw err; 
         }
     }
 
