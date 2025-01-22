@@ -26,7 +26,7 @@ class UserMiddleware {
   static handleValidationErrors(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(500).json(ResponseHandler.error(`Field validation failed`, 500, errors.array()));
+      return res.status(400).json(ResponseHandler.error(`Field validation failed`, 500, errors.array()));
     }
     next();
   }

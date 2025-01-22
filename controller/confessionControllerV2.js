@@ -25,6 +25,15 @@ class ConfessionController {
             res.status(500).json(ResponseHandler.error(err.message, 500, err));
         }
     }
+
+    getAllTags = async(req, res) => {
+        try {
+            const allTags = await this.confessionService.getAllTags();
+            res.status(200).json(ResponseHandler.success(`All tags retrieved`, 200, allTags));
+        } catch (err) {
+            res.status(400).json(ResponseHandler.error(`Something went wrong`, 500, err.message));
+        }
+    }
 }
 
 module.exports = ConfessionController;

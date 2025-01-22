@@ -43,6 +43,28 @@ class ConfessionRepository{
     }
     
     /**
+     * 
+     * @returns {Promise<Array<{id: number, label: string}>>} Array of tag Ids and its label
+     */
+    async findAllTags() {
+        try {
+            const [result] = await this.pool.query(
+                `
+                SELECT id, label FROM tag
+                WHERE isActive = 1
+                `
+            ); 
+            return [result] || null;
+        } catch (err) {
+            throw err; 
+        }
+    }
+
+    /**
+     * utilities subqueries 👇🏼
+     */
+
+    /**
      * @param {string} label - The label that we want to query for
      * @returns {Promise<number>} - The pending status ID from status table
      */
@@ -75,6 +97,17 @@ class ConfessionRepository{
     }
 
     async _insertConfessionTags(connection, confessionId, tagIds) {
+        //TODO: To check whether the tags with that id exist
+        const [result] = await connection.query(
+            `
+            SELECT id from tag 
+            WHERE id IN (?)
+            `, 
+            [tagIds]
+        ); 
+        if(tagIds.length !== result.length) {
+            throw new Error(`One or more tags does not exist`);
+        }
         const newArray = tagIds.map(tagId=> [confessionId, tagId]);
         await connection.query(
             `

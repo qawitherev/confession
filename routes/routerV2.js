@@ -34,6 +34,7 @@ userRouter.post('/logout', UserMiddleware.logoutMiddleware, userController.logou
 //confession route 
 const confessionRouter = express.Router();
 confessionRouter.post('/createConfession', JWToken.verifyToken, ConfessionMiddlewareV2.createConfessionMW, confessionController.createConfession);
+confessionRouter.get(`/getAllTags`, JWToken.verifyToken, confessionController.getAllTags);
 
 module.exports = {
     userRouter, 

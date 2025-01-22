@@ -10,12 +10,12 @@ class UserController {
 
     if (!username || !nickname || !hashedPassword) {
       return res
-        .status(400)
+        .status(409)
         .json(
           ResponseHandler.error(
             `Username, nickname and password cannot be empty`,
             400
-          )
+          ) 
         );
     }
 

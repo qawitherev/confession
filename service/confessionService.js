@@ -25,6 +25,15 @@ class ConfessionService {
             throw(err);
         }
     }
+
+    async getAllTags() {
+        try {
+            const allTags = await this.confessionRepository.findAllTags();
+            return allTags;
+        } catch (err) {
+            throw err; 
+        }
+    }
 }
 
 module.exports = ConfessionService;
