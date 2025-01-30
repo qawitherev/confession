@@ -82,7 +82,12 @@ class ConfessionRepository{
         }
     }
 
-    async findRejectedConfession() {
+    /**
+     * 
+     * @param {string} status it's either Published or Rejected, no other values awasssss
+     * @returns 
+     */
+    async findPublishedOrRejectedConfessions(status) {
         try {
             const [result] = await this.pool.query(
                 `
@@ -94,10 +99,11 @@ class ConfessionRepository{
                 left join timestamptype ty on ty.id = cts.timestampTypeId
                 left join user confessor on c.userId = confessor.Id
                 left join user executor on cts.userId = executor.Id
-                where ty.label = 'Rejected'
+                where ty.label = ?
                 group by c.id, confessor.username, c.title, c.body, c.createdAt, executor.username, cts.executedAt
                 order by c.id desc
-                `
+                `, 
+                [status]
             );
             return [result] || null;
         } catch (err) {

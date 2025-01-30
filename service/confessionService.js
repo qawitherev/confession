@@ -46,8 +46,17 @@ class ConfessionService {
 
     async getRejectedConfessions() {
         try {
-            const rejectedConfessions = await this.confessionRepository.findRejectedConfession(); 
+            const rejectedConfessions = await this.confessionRepository.findPublishedOrRejectedConfessions('Rejected'); 
             return rejectedConfessions; 
+        } catch (err) {
+            throw err; 
+        }
+    }
+
+    async getPublishedConfessions() {
+        try {
+            const publishedConfessions = await this.confessionRepository.findPublishedOrRejectedConfessions('Published'); 
+            return publishedConfessions; 
         } catch (err) {
             throw err; 
         }

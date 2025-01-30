@@ -53,6 +53,15 @@ class ConfessionController {
         }
     }
 
+    getPublishedConfessions = async(_, res) => {
+        try {
+            const publishedConfessions = await this.confessionService.getPublishedConfessions(); 
+            res.status(200).json(ResponseHandler.success(`Published confessions queried`, 200, publishedConfessions)); 
+        } catch (err) {
+            res.status(500).json(ResponseHandler.error(`Something went wrong`, 500, err.message)); 
+        }
+    }
+
     publishConfession = async (req, res) => {
         const { id } = req.user; 
         const { confessionId } = req.body;

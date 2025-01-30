@@ -36,6 +36,7 @@ const confessionRouter = express.Router();
 confessionRouter.post('/createConfession', JWToken.verifyToken, ConfessionMiddlewareV2.createConfessionMW, confessionController.createConfession);
 confessionRouter.get(`/getAllTags`, JWToken.verifyToken, confessionController.getAllTags);
 confessionRouter.get('/getPendingConfessions', JWToken.verifyToken, ConfessionMiddlewareV2.checkAdmin, confessionController.getPendingConfessions);
+confessionRouter.get('/getPublishedConfessions', JWToken.verifyToken, ConfessionMiddlewareV2.checkAdmin, confessionController.getPublishedConfessions);
 confessionRouter.get('/getRejectedConfessions', JWToken.verifyToken, ConfessionMiddlewareV2.checkAdmin, confessionController.getRejectedConfessions);
 confessionRouter.post('/publishConfession', JWToken.verifyToken, ConfessionMiddlewareV2.checkAdmin, ConfessionMiddlewareV2.updateConfessionStatusMW, confessionController.publishConfession); 
 confessionRouter.post('/rejectConfession', JWToken.verifyToken, ConfessionMiddlewareV2.checkAdmin, ConfessionMiddlewareV2.updateConfessionStatusMW, confessionController.rejectConfession); 
