@@ -20,18 +20,58 @@ class ConfessionController {
 
         try {
             const confessionId = await this.confessionService.createConfession(title, body, id, tagIds);
-            res.status(200).json(ResponseHandler.success(`Confession created`, 200, confessionId))
+            res.status(200).json(ResponseHandler.success(`Confession submitted`, 200, confessionId))
         } catch (err) {
             res.status(500).json(ResponseHandler.error(err.message, 500, err));
         }
     }
 
-    getAllTags = async(req, res) => {
+    getAllTags = async(_, res) => {
         try {
             const allTags = await this.confessionService.getAllTags();
             res.status(200).json(ResponseHandler.success(`All tags retrieved`, 200, allTags));
         } catch (err) {
             res.status(400).json(ResponseHandler.error(`Something went wrong`, 500, err.message));
+        }
+    }
+
+    getPendingConfessions = async(_, res) => {
+        try {
+            const pendingConfessions = await this.confessionService.getPendingConfessions(); 
+            res.status(200).json(ResponseHandler.success(`Pending confessions queried`, 200, pendingConfessions)); 
+        } catch (err) {
+            res.status(500).json(ResponseHandler.error(`Something went wrong. ${err.message}`, 500, err));
+        }
+    }
+
+    getRejectedConfessions = async(_, res) => {
+        try {
+            const rejectedConfessions = await this.confessionService.getRejectedConfessions(); 
+            res.status(200).json(ResponseHandler.success(`Rejected confession queried`, 200, rejectedConfessions)); 
+        } catch (err) {
+            res.status(500).json(ResponseHandler.error(`Something went wrong`, 500, err.message)); 
+        }
+    }
+
+    publishConfession = async (req, res) => {
+        const { id } = req.user; 
+        const { confessionId } = req.body;
+        try {
+            await this.confessionService.publishConfession(id, confessionId);
+            res.status(200).json(ResponseHandler.success(`Confession published`, 200, `Confession published by admin`)); 
+        } catch (err) {
+            res.status(500).json(ResponseHandler.error(`Something went wrong`, 500, err.message)); 
+        }
+    }
+
+    rejectConfession = async (req, res) => {
+        const { id } = req.user; 
+        const { confessionId } = req.body;
+        try {
+            await this.confessionService.rejectConfession(id, confessionId);
+            res.status(200).json(ResponseHandler.success(`Confession rejected`, 200, `Confession rejected by admin`)); 
+        } catch (err) {
+            res.status(500).json(ResponseHandler.error(`Something went wrong`, 500, err.message)); 
         }
     }
 }

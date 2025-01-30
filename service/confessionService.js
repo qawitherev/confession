@@ -34,6 +34,41 @@ class ConfessionService {
             throw err; 
         }
     }
+
+    async getPendingConfessions() {
+        try {
+            const pendingConfessions = await this.confessionRepository.findPendingConfessions(); 
+            return pendingConfessions; 
+        } catch (err) {
+            throw err; 
+        }
+    }
+
+    async getRejectedConfessions() {
+        try {
+            const rejectedConfessions = await this.confessionRepository.findRejectedConfession(); 
+            return rejectedConfessions; 
+        } catch (err) {
+            throw err; 
+        }
+    }
+
+    async publishConfession(userId, confessionId) {
+        try {
+            await this.confessionRepository.updateConfessionStatus(userId, confessionId, 'Published', 'Published'); 
+        } catch (err) {
+            throw err; 
+        }
+    }
+
+    async rejectConfession(userId, confessionId) {
+        try {
+            await this.confessionRepository.updateConfessionStatus(userId, confessionId, 'Rejected', 'Rejected'); 
+        } catch (err) {
+            throw err; 
+        }
+    }
+
 }
 
 module.exports = ConfessionService;

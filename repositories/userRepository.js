@@ -91,7 +91,6 @@ class UserRepository {
             throw err; 
         }
     }
-
 }
 
 module.exports = UserRepository;

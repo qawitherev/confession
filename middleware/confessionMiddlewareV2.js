@@ -1,5 +1,6 @@
 const { body, validationResult } = require("express-validator");
 const ResponseHandler = require("../controller/responseHandler");
+const { UserTypeAuth } = require("../security/previlege");
 
 class ConfessionMiddlewareV2 {
     static createConfessionMW = [
@@ -17,6 +18,27 @@ class ConfessionMiddlewareV2 {
       }), 
       this.handleValidationErrors,
     ];
+
+    static updateConfessionStatusMW = [
+      body('confessionId').trim().escape().isNumeric(), 
+      this.handleValidationErrors
+    ]
+
+    static checkAdmin = async(req, res, next) => {
+      const { id } = req.user; 
+      
+      try {
+        const isAdmin = await UserTypeAuth.isAdmin(id); 
+        if(isAdmin) {
+          next(); 
+        } else {
+          const err = new Error(`User is not an admin`); 
+          throw err;
+        }
+      } catch (err) {
+        res.status(403).json(ResponseHandler.error(err.message, 401, err)); 
+      }
+    }
   
     static handleValidationErrors(req, res, next) {
       const errors = validationResult(req);

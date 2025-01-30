@@ -61,6 +61,71 @@ class ConfessionRepository{
     }
 
     /**
+     * @returns {Promise<Array<{confessionId: number, username: string, title: string, body: string, submittedOn: DateTime, tags: string}>>} Confessions with status pending 
+     */
+    async findPendingConfessions() {
+        try {
+            const [result] = await this.pool.query(
+                `select c.id confessionId, u.username, c.title, c.body,  c.createdAt as submittedOn, group_concat(t.label separator ', ') as tags
+                from confession c 
+                join status s on c.statusId = s.id
+                join user u on c.userId = u.id
+                join confessiontag ct on ct.confessionId = c.id
+                join tag t on t.id = ct.confessionTagId
+                where s.label='Pending'
+                group by c.id, u.username, c.title, c.body,  c.createdAt 
+                order by c.id desc`
+            ); 
+            return [result] || null;
+        } catch (err) {
+            throw err; 
+        }
+    }
+
+    async findRejectedConfession() {
+        try {
+            const [result] = await this.pool.query(
+                `
+                select confessor.username as username, c.title, c.body, group_concat(t.label separator ', ') as tags, 
+                c.createdAt as submittedOn, executor.username as rejectedBy, cts.executedAt as rejectedAt from confession c
+                left join confessiontag ct on ct.confessionId = c.id
+                left join tag t on t.id = ct.confessionTagId
+                inner join confesssionTimestamp cts on cts.confessionId = c.id
+                left join timestamptype ty on ty.id = cts.timestampTypeId
+                left join user confessor on c.userId = confessor.Id
+                left join user executor on cts.userId = executor.Id
+                where ty.label = 'Rejected'
+                group by c.id, confessor.username, c.title, c.body, c.createdAt, executor.username, cts.executedAt
+                order by c.id desc
+                `
+            );
+            return [result] || null;
+        } catch (err) {
+            throw err; 
+        }
+    }
+
+    /**
+     * 
+     * @param {number} confessionId confession id to be updated 
+     * @param {string} status Published/Rejected
+     */
+    async updateConfessionStatus(userId, confessionId, status, timestampType) {
+        const connection = await this.pool.getConnection(); 
+        await connection.beginTransaction(); 
+        try {
+            await this._updateConfessionStatus(connection, confessionId, status); 
+            await this._insertTimestamp(connection, userId, confessionId, timestampType); 
+            await connection.commit(); 
+        } catch (err) {
+            await connection.rollback(); 
+            throw err; 
+        } finally {
+            connection.release(); 
+        }
+    }
+
+    /**
      * utilities subqueries 👇🏼
      */
 
@@ -116,6 +181,36 @@ class ConfessionRepository{
             `, 
             [newArray]
         );
+    }
+
+    async _updateConfessionStatus(connection, confessionId, status) {
+        try {
+            await connection.query(
+                `
+                update confession c
+                set statusId = (select id from status s where s.label = ?)
+                where c.id = ?; 
+                `, 
+                [status, confessionId]
+            )
+        } catch (err) {
+            throw err; 
+        }
+    }
+
+    async _insertTimestamp(connection, userId, confessionId, timestampType) {
+        try {
+            await connection.query(
+                `
+                insert into confesssionTimestamp (userId, confessionId, timestamptypeId, executedAt) 
+                values 
+                (?, ?, (select id from timestampType a where a.label = ?), now());
+                `, 
+                [userId, confessionId, timestampType]
+            ); 
+        } catch (err) {
+            throw err; 
+        }
     }
 }
 
