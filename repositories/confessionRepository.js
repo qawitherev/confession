@@ -131,6 +131,55 @@ class ConfessionRepository{
         }
     }
 
+    async reactConfession(confessionId, reactorId, reaction) {
+        try {
+            const [result] = await this.pool.query(
+                `
+                insert into confessionReaction (confessionId, reactorId, reactionTypeId, reactionTimestamp)
+                value 
+                (?, ?, (select id from reactionType r where r.label=?), now())
+                `, 
+                [confessionId, reactorId, reaction]
+            ); 
+            return result.insertId;
+        } catch (err) {
+            throw err; 
+        }
+    }
+
+    /**
+     * this query is for confession page (user side)
+     */
+    async findConfessions() {
+        try {
+            const [result] = await this.pool.query(
+                `
+                with confession_tags as (
+                select c.id as confessionId, group_concat(t.label separator ', ') as tags
+                from confession c
+                inner join confessiontag ct on ct.confessionId = c.id 
+                left join tag t on t.id = ct.confessiontagId
+                group by c.id
+                )
+
+                select 
+                c.title, c.body, c.createdAt as submittedOn, ct.tags as tags,
+                sum(case when rt.label = 'Relate' then 1 else 0 end) relateCount, 
+                sum(case when rt.label = 'Not Relate' then 1 else 0 end) notRelateCount
+                from confession c
+                left join confessionreaction cr on cr.confessionId = c.id
+                left join reactiontype rt on rt.id = cr.reactiontypeId
+                inner join confession_tags ct on ct.confessionId = c.id
+                group by c.id, c.title, c.body, c.createdAt, ct.confessionId
+                order by c.id desc 
+                `
+            ); 
+            return result; 
+        } catch (err) {
+            throw err; 
+        }
+    }
+
     /**
      * utilities subqueries 👇🏼
      */

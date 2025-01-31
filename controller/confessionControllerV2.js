@@ -83,6 +83,27 @@ class ConfessionController {
             res.status(500).json(ResponseHandler.error(`Something went wrong`, 500, err.message)); 
         }
     }
+
+    reactConfession = async (req, res) => {
+        const { confessionId, reaction } = req.body; 
+        const { id } = req.user;
+        const reactorId = id;  
+        try {
+            const res = await this.confessionService.reactConfession(confessionId, reactorId, reaction);
+            res.json(200).json(ResponseHandler.success(`React success`, 200, res)); 
+        } catch (err) {
+            res.status(500).json(ResponseHandler.error(`Something went wrong`, 500, err.message)); 
+        }
+    }
+
+    getConfessions = async (_, res) => {
+        try {
+            const confessions = await this.confessionService.getConfessions(); 
+            res.status(200).json(ResponseHandler.success(`Confessions queried`, 200, confessions)); 
+        } catch (err) {
+            res.status(200).json(ResponseHandler.error(`Something went wrong`, 500, err.message));
+        }
+    }
 }
 
 module.exports = ConfessionController;

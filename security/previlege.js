@@ -29,6 +29,24 @@ class UserTypeAuth {
       throw err;
     }
   }
+
+  static async isUser(userId) {
+    try {
+      const [result] = await pool.query(
+        `select u.username from user u 
+        join usertype ut on u.userTypeId = ut.id
+        where u.id = ? and ut.label = 'User'`,
+        userId
+      );
+      if(result.length === 0) {
+        return false; 
+      } else {
+        return true;
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
 }
 
 

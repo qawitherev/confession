@@ -39,6 +39,22 @@ class ConfessionMiddlewareV2 {
         res.status(403).json(ResponseHandler.error(err.message, 401, err)); 
       }
     }
+
+    static checkUser = async(req, res, next) => {
+      const { id } = req.user; 
+      
+      try {
+        const isAdmin = await UserTypeAuth.isUser(id); 
+        if(isAdmin) {
+          next(); 
+        } else {
+          const err = new Error(`Only user is able to GET`); 
+          throw err;
+        }
+      } catch (err) {
+        res.status(403).json(ResponseHandler.error(err.message, 401, err)); 
+      }
+    }
   
     static handleValidationErrors(req, res, next) {
       const errors = validationResult(req);

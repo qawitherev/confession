@@ -78,6 +78,24 @@ class ConfessionService {
         }
     }
 
+    async reactConfession() {
+        try {
+            const res = await this.confessionRepository.reactConfession(confessionId, reactorId, reaction);
+            return res; 
+        } catch (err) {
+            throw err; 
+        }
+    }
+
+    async getConfessions() {
+        try {
+            const confessions = await this.confessionRepository.findConfessions(); 
+            return confessions; 
+        } catch (err) {
+            throw err; 
+        }
+    }
+
 }
 
 module.exports = ConfessionService;
