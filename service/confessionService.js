@@ -78,7 +78,7 @@ class ConfessionService {
         }
     }
 
-    async reactConfession() {
+    async reactConfession(confessionId, reactorId, reaction) {
         try {
             const res = await this.confessionRepository.reactConfession(confessionId, reactorId, reaction);
             return res; 
@@ -87,9 +87,9 @@ class ConfessionService {
         }
     }
 
-    async getConfessions() {
+    async getConfessions(userId) {
         try {
-            const confessions = await this.confessionRepository.findConfessions(); 
+            const confessions = await this.confessionRepository.findConfessions(userId); 
             return confessions; 
         } catch (err) {
             throw err; 

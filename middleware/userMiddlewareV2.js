@@ -1,6 +1,7 @@
 const { body, validationResult, header } = require("express-validator");
 const ResponseHandler = require("../controller/responseHandler");
 const crypto = require("crypto");
+const { UserTypeAuth } = require("../security/previlege");
 
 class UserMiddleware {
   static signUpMiddleware = [
@@ -29,6 +30,25 @@ class UserMiddleware {
       return res.status(400).json(ResponseHandler.error(`Field validation failed`, 500, errors.array()));
     }
     next();
+  }
+
+  static checkUser(req, res, next) {
+    const { id } = req.user; 
+    try {
+      const isUser = UserTypeAuth.isUser(id); 
+      if (!isUser) {
+        const err = new Error(`Unauthorized`); 
+        err.statusCode = 403; 
+        throw err; 
+      }
+      next(); 
+    } catch (err) {
+      if(err.statusCode===403) {
+        res.status(403).json(ResponseHandler.error(`Something went wrong`, 403, err.message)); 
+      } else {
+        res.status(500).json(ResponseHandler.error(`Something went wrong`, 500, err.message)); 
+      }
+    }
   }
 
   static hashPassword(req, res, next) {

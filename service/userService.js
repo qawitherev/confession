@@ -54,6 +54,15 @@ class UserService {
         JWToken.blacklistToken(token, 3600); 
         return true; 
     }
+
+    async getUserReactions(userId) {
+        try {
+            const reactions = await this.userRepository.findUserReactions(userId); 
+            return reactions; 
+        } catch (err) {
+            throw err; 
+        }
+    }
 }
 
 module.exports = UserService;

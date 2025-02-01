@@ -24,6 +24,18 @@ class ConfessionMiddlewareV2 {
       this.handleValidationErrors
     ]
 
+    static reactConfessionMW = [
+      body('confessionId').trim().escape().isNumeric(), 
+      body('reaction').trim().escape().isString().custom(value => {
+        const ar = ['Relate', 'Not Relate']; 
+        if (!ar.includes(value)) {
+          throw new Error('Reaction invalid. Valid reactions are only Relate and Not Relate');
+        }
+        return true; 
+      }),
+      this.handleValidationErrors
+    ];
+
     static checkAdmin = async(req, res, next) => {
       const { id } = req.user; 
       
@@ -52,7 +64,7 @@ class ConfessionMiddlewareV2 {
           throw err;
         }
       } catch (err) {
-        res.status(403).json(ResponseHandler.error(err.message, 401, err)); 
+        res.status(403).json(ResponseHandler.error(err.message, 403, err)); 
       }
     }
   

@@ -1,6 +1,6 @@
 /**
  * @author Abdul Qawi Bin Kamran
- * @version 0.0.2
+ * @version 0.0.3
  */
 
 const pool = require("../config/database");
@@ -50,7 +50,7 @@ class UserTypeAuth {
 }
 
 
-
+//deprecated
 const checkAdmin = async (req, res, next) => {
   const { user } = req;
   try {

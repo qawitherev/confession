@@ -30,6 +30,7 @@ const userRouter = express.Router();
 userRouter.post('/signUp', UserMiddleware.signUpMiddleware, userController.signUp); 
 userRouter.post('/login', UserMiddleware.loginMiddleware, userController.login);
 userRouter.post('/logout', UserMiddleware.logoutMiddleware, userController.logout);
+userRouter.get('/reactions', JWToken.verifyToken, UserMiddleware.checkUser, userController.getUserReactions); 
 
 //confession route 
 const confessionRouter = express.Router();
@@ -41,6 +42,7 @@ confessionRouter.get('/getRejectedConfessions', JWToken.verifyToken, ConfessionM
 confessionRouter.post('/publishConfession', JWToken.verifyToken, ConfessionMiddlewareV2.checkAdmin, ConfessionMiddlewareV2.updateConfessionStatusMW, confessionController.publishConfession); 
 confessionRouter.post('/rejectConfession', JWToken.verifyToken, ConfessionMiddlewareV2.checkAdmin, ConfessionMiddlewareV2.updateConfessionStatusMW, confessionController.rejectConfession); 
 confessionRouter.get('/getConfessions', JWToken.verifyToken, ConfessionMiddlewareV2.checkUser, confessionController.getConfessions);
+confessionRouter.post('/reactConfession', JWToken.verifyToken, ConfessionMiddlewareV2.checkUser, ConfessionMiddlewareV2.reactConfessionMW, confessionController.reactConfession); 
 
 
 

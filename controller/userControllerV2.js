@@ -51,6 +51,16 @@ class UserController {
     this.userService.logout(token);
     return res.status(200).json(ResponseHandler.success(`Logout success`, 200, null));
   }
+
+  getUserReactions = async (req, res) => {
+    const userId = req.user.id; 
+    try {
+      const reactions = await this.userService.getUserReactions(userId); 
+      res.status(200).json(ResponseHandler.success(`User reactions queried`, 200, reactions)); 
+    } catch (err) {
+      res.status(200).json(ResponseHandler.error(`Something went wrong`, 500, err.message)); 
+    }
+  }
 }
 
 module.exports = UserController;

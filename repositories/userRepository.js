@@ -1,3 +1,8 @@
+/**
+ * @author Abdul Qawi Bin Kamran 
+ * @version 0.0.2
+ */
+
 class UserRepository {
     constructor(pool) {
         this.pool = pool;
@@ -87,6 +92,28 @@ class UserRepository {
                 [username, hashedPassword]
             )
             return result[0] || null;
+        } catch (err) {
+            throw err; 
+        }
+    }
+
+    /**
+     * 
+     * @param {number} userId 
+     * @returns confession | reaction 
+     */
+    async findUserReactions(userId) {
+        try {
+            const [result] = await this.pool.query(
+                `
+                select cr.confessionId as confessionId, rt.label as reaction
+                from confessionreaction cr 
+                join reactionType rt on cr.reactionTypeId = rt.id
+                where cr.reactorId = ?
+                `, 
+                [userId]
+            )
+            return result || null;
         } catch (err) {
             throw err; 
         }
