@@ -31,6 +31,7 @@ userRouter.post('/signUp', UserMiddleware.signUpMiddleware, userController.signU
 userRouter.post('/login', UserMiddleware.loginMiddleware, userController.login);
 userRouter.post('/logout', UserMiddleware.logoutMiddleware, userController.logout);
 userRouter.get('/reactions', JWToken.verifyToken, UserMiddleware.checkUser, userController.getUserReactions); 
+userRouter.get('/getUsers', JWToken.verifyToken, UserMiddleware.checkAdmin, userController.getAllUsersPaged);
 
 //confession route 
 const confessionRouter = express.Router();

@@ -2,6 +2,7 @@ const { body, validationResult, header } = require("express-validator");
 const ResponseHandler = require("../controller/responseHandler");
 const crypto = require("crypto");
 const { UserTypeAuth } = require("../security/previlege");
+const { errorMonitor } = require("events");
 
 class UserMiddleware {
   static signUpMiddleware = [
@@ -32,22 +33,33 @@ class UserMiddleware {
     next();
   }
 
-  static checkUser(req, res, next) {
+  static checkUser = async(req, res, next) => {
     const { id } = req.user; 
+
     try {
-      const isUser = UserTypeAuth.isUser(id); 
+      const isUser  = await UserTypeAuth.isUser(id); 
       if (!isUser) {
-        const err = new Error(`Unauthorized`); 
-        err.statusCode = 403; 
-        throw err; 
+        const error = new Error(`User is not is a user`);
+        throw error; 
       }
       next(); 
     } catch (err) {
-      if(err.statusCode===403) {
-        res.status(403).json(ResponseHandler.error(`Something went wrong`, 403, err.message)); 
-      } else {
-        res.status(500).json(ResponseHandler.error(`Something went wrong`, 500, err.message)); 
+      res.status(403).json(ResponseHandler.error(`Unauthorized`, 403, err.message)); 
+    }
+  }
+
+  static checkAdmin = async(req, res, next) => {
+    const { id } = req.user; 
+
+    try {
+      const isAdmin = await UserTypeAuth.isAdmin(id); 
+      if (!isAdmin) {
+        const error = new Error('User is not admin'); 
+        throw error; 
       }
+      next();
+    } catch (err) {
+      res.status(403).json(ResponseHandler.error(`Unauthorized`, 403, err.message))
     }
   }
 

@@ -97,6 +97,24 @@ class UserRepository {
         }
     }
 
+    async findAllUsersPaged(lastSeenId = 0, pageSize = 50) {
+        try {
+            const [result] = await this.pool.query(
+                `
+                select u.id, ut.label as userType, u.username, u.nickname, u.createdAt from user u 
+                inner join usertype ut on ut.id = u.userTypeId
+                where u.id > ?
+                order by u.id desc 
+                limit ?
+                `, 
+                [lastSeenId, pageSize]
+            );
+            return result || [];
+        } catch (err) {
+            throw err; 
+        }
+    }
+
     /**
      * 
      * @param {number} userId 

@@ -61,6 +61,19 @@ class UserController {
       res.status(200).json(ResponseHandler.error(`Something went wrong`, 500, err.message)); 
     }
   }
+
+  getAllUsersPaged = async (req, res) => {
+    const { lastSeenId, pageSize } = req.query; 
+    try {
+      const users = await this.userService.getAllUsersPaged(
+        lastSeenId ? parseInt(lastSeenId) : 0, 
+        pageSize ? parseInt(pageSize) : 50
+      );
+      res.status(200).json(ResponseHandler.success(`Users data fetched`, 200, users));
+    } catch (err) {
+      res.status(500).json(ResponseHandler.error(`Something went wrong`, 500, err.message));
+    }
+  }
 }
 
 module.exports = UserController;

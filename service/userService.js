@@ -63,6 +63,15 @@ class UserService {
             throw err; 
         }
     }
+
+    async getAllUsersPaged(lastSeenId, pageSize) {
+        try {
+            const users = await this.userRepository.findAllUsersPaged(lastSeenId, pageSize); 
+            return users; 
+        } catch (err) {
+            throw err; 
+        }
+    }
 }
 
 module.exports = UserService;
