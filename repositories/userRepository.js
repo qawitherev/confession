@@ -103,7 +103,7 @@ class UserRepository {
                 `
                 select u.id, ut.label as userType, u.username, u.nickname, u.createdAt from user u 
                 inner join usertype ut on ut.id = u.userTypeId
-                where u.id > ?
+                where u.id < ?
                 order by u.id desc 
                 limit ?
                 `, 
