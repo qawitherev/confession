@@ -1,6 +1,6 @@
 /**
  * @author Abdul Qawi Bin Kamran 
- * @version 0.0.2
+ * @version 0.0.3
  */
 
 class UserRepository {
@@ -97,19 +97,33 @@ class UserRepository {
         }
     }
 
-    async findAllUsersPaged(lastSeenId = 0, pageSize = 50) {
+    async findAllUsersPaged(page = 1, pageSize = 50) {
+        const offset = (page - 1) * pageSize;
         try {
             const [result] = await this.pool.query(
                 `
                 select u.id, ut.label as userType, u.username, u.nickname, u.createdAt from user u 
                 inner join usertype ut on ut.id = u.userTypeId
-                where u.id < ?
                 order by u.id desc 
-                limit ?
+                limit ? offset ?
                 `, 
-                [lastSeenId, pageSize]
+                [pageSize, offset]
             );
-            return result || [];
+            const [res] = await this.pool.query(
+                `
+                select count(*) as total from user
+                `
+            );
+            const count = res[0].total;
+            return {
+                users: result || [], 
+                pagination: {
+                    currentPage: page, 
+                    pageSize: pageSize, 
+                    totalItems: count, 
+                    totalPages: Math.ceil(count/pageSize)
+                }
+            };
         } catch (err) {
             throw err; 
         }

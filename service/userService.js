@@ -64,9 +64,9 @@ class UserService {
         }
     }
 
-    async getAllUsersPaged(lastSeenId, pageSize) {
+    async getAllUsersPaged(page, pageSize) {
         try {
-            const users = await this.userRepository.findAllUsersPaged(lastSeenId, pageSize); 
+            const users = await this.userRepository.findAllUsersPaged(page, pageSize); 
             return users; 
         } catch (err) {
             throw err; 

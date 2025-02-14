@@ -63,10 +63,10 @@ class UserController {
   }
 
   getAllUsersPaged = async (req, res) => {
-    const { lastSeenId, pageSize } = req.query; 
+    const { page, pageSize } = req.query; 
     try {
       const users = await this.userService.getAllUsersPaged(
-        lastSeenId ? parseInt(lastSeenId) : 0, 
+        page ? parseInt(page) : 1, 
         pageSize ? parseInt(pageSize) : 50
       );
       res.status(200).json(ResponseHandler.success(`Users data fetched`, 200, users));
