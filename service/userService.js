@@ -1,4 +1,5 @@
 const JWToken = require('../security/jsonWebToken'); // Adjust the path as necessary
+const { isValidDate } = require('../utils/dateAndTime');
 
 class UserService {
     constructor(userRepository) {
@@ -64,9 +65,33 @@ class UserService {
         }
     }
 
-    async getAllUsersPaged(page, pageSize) {
+    async getAllUsersPaged(
+        searchKeyword, 
+        userType, 
+        startDate, 
+        endDate, 
+        sortBy, 
+        sortOrder,
+        page, 
+        pageSize) {
+
+        const availableSortBy = ['u.id', 'u.username', 'u.nickname', 'u.createdAt'];
+        const availableSortOrder = ['asc', 'desc'];
+
+        const sd = isValidDate(startDate) && startDate ? startDate : '1900-01-01';
+        const ed = isValidDate(endDate) && endDate ? endDate : '9999-12-31';
+        const ut = !userType ? 'User' : userType;  
+        const sk = !searchKeyword ? '' : searchKeyword; 
+        const sb = availableSortBy.includes(sortBy) ? sortBy : 'u.id';
+        const so = availableSortOrder.includes(sortOrder) ? sortOrder : 'asc'
+
         try {
-            const users = await this.userRepository.findAllUsersPaged(page, pageSize); 
+            const users = await this.userRepository.findAllUsersPaged(
+                sk, 
+                ut, 
+                sd, ed,
+                sb, so,
+                page, pageSize); 
             return users; 
         } catch (err) {
             throw err; 

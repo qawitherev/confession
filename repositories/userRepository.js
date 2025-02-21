@@ -102,6 +102,8 @@ class UserRepository {
     userType,
     startDate,
     endDate,
+    sortBy,
+    sortOrder,
     page = 1,
     pageSize = 50
   ) {
@@ -109,23 +111,30 @@ class UserRepository {
     try {
       const [result] = await this.pool.query(
         `
-                select u.id, ut.label as userType, u.username, u.nickname, u.createdAt from user u 
-                inner join usertype ut on ut.id = u.userTypeId
-                where (
-                u.username like concat('%', ?, '%') or
-                u.nickname like concat('%', ?, '%')
-                ) and 
-                u.userTypeId = (select id from usertype ut where ut.label = ?) and 
-                u.createdAt between ? and ?
-                order by u.id desc
-                limit ? offset ?
-                `,
-        [searchKeyword, userType, pageSize, offset]
+        select u.id, ut.label as userType, u.username, u.nickname, u.createdAt from user u 
+        inner join usertype ut on ut.id = u.userTypeId
+        where (
+        u.username like concat('%', ?, '%') or
+        u.nickname like concat('%', ?, '%')
+        ) and 
+        u.userTypeId = (select id from usertype ut where ut.label = ?) and 
+        u.createdAt between ? and ?
+        order by u.username asc
+        limit ? offset ?
+        `,
+        [searchKeyword, searchKeyword, userType, startDate, endDate, pageSize, offset]
       );
       const [res] = await this.pool.query(
         `
-                select count(*) as total from user
-                `
+        select count(*) as total from user u 
+        where (
+        u.username like concat('%', ?, '%') or
+        u.nickname like concat('%', ?, '%')
+        ) and 
+        u.userTypeId = (select id from usertype ut where ut.label = ?) and 
+        u.createdAt between ? and ?
+        `,
+        [searchKeyword, searchKeyword, userType, startDate, endDate]
       );
       const count = res[0].total;
       return {

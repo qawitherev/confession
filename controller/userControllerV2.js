@@ -63,9 +63,10 @@ class UserController {
   }
 
   getAllUsersPaged = async (req, res) => {
-    const { page, pageSize } = req.query; 
+    const { searchKeyword, startDate, endDate, sortBy, sortOrder, page, pageSize } = req.query; 
     try {
       const users = await this.userService.getAllUsersPaged(
+        searchKeyword, 'User', startDate, endDate, sortBy, sortOrder, 
         page ? parseInt(page) : 1, 
         pageSize ? parseInt(pageSize) : 50
       );
