@@ -119,7 +119,7 @@ class UserRepository {
         ) and 
         u.userTypeId = (select id from usertype ut where ut.label = ?) and 
         u.createdAt between ? and ?
-        order by u.username asc
+        order by ${sortBy} ${sortOrder}
         limit ? offset ?
         `,
         [searchKeyword, searchKeyword, userType, startDate, endDate, pageSize, offset]
