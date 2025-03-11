@@ -1,3 +1,6 @@
+/**
+ * @deprecated
+ */
 const confessionTagQueries = {
     getAllTags: `SELECT id, label FROM tag 
 WHERE isActive = 1`,

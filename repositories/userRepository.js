@@ -1,6 +1,6 @@
 /**
  * @author Abdul Qawi Bin Kamran
- * @version 0.0.3
+ * @version 0.0.4
  */
 
 class UserRepository {
@@ -9,23 +9,17 @@ class UserRepository {
   }
 
   async createUser(userTypeId, username, password, nickname) {
-    const connection = await this.pool.getConnection();
     try {
-      await connection.beginTransaction();
-      const [result] = await connection.query(
+      const [result] = await this.pool.query(
         `
                 INSERT INTO user (userTypeId, username, password, nickname, createdAt)
                 VALUES (?, ?, ?, ?, NOW())
                 `,
         [userTypeId, username, password, nickname]
       );
-      await connection.commit();
       return result.insertId;
     } catch (err) {
-      await connection.rollback();
       throw err;
-    } finally {
-      connection.release();
     }
   }
 
@@ -52,11 +46,17 @@ class UserRepository {
       await connection.beginTransaction();
       const [result] = await connection.query(
         `
-                INSERT INTO userType (label, isActive)
+                INSERT INTO usertype (label, isActive)
                 VALUES (?, 1)
                 `,
         [userType]
       );
+      const [_] = await connection.query(
+        `
+                INSERT INTO usertype (label, isActive)
+                VALUES ('Admin', 1)
+                `
+      ); 
       return result.insertId;
     } catch (err) {
       throw err;
@@ -68,13 +68,16 @@ class UserRepository {
       const [result] = await this.pool.query(
         `
                 SELECT id 
-                FROM userType
+                FROM usertype
                 WHERE label = ? AND 
                 isActive = 1
                 `,
         [userType]
       );
-      return result[0].id || null;
+      if (result.length === 0) {
+        return null;
+      } 
+      return result[0].id;
     } catch (err) {
       throw err;
     }
@@ -162,7 +165,7 @@ class UserRepository {
         `
                 select cr.confessionId as confessionId, rt.label as reaction
                 from confessionreaction cr 
-                join reactionType rt on cr.reactionTypeId = rt.id
+                join reactiontype rt on cr.reactiontypeId = rt.id
                 where cr.reactorId = ?
                 `,
         [userId]
