@@ -26,7 +26,7 @@ class ConfessionRepository{
         const connection = await this.pool.getConnection();
         await connection.beginTransaction();
         try {
-           const pendingStatusId = await this._findStatusId(connection, 'Pending');
+           const pendingStatusId = await this._findOrCreateStatusId(connection, 'Pending');
            if (!pendingStatusId) {
             throw new Error('Status table not yet initialized');
            }
@@ -71,7 +71,7 @@ class ConfessionRepository{
                 join status s on c.statusId = s.id
                 join user u on c.userId = u.id
                 join confessiontag ct on ct.confessionId = c.id
-                join tag t on t.id = ct.confessionTagId
+                join tag t on t.id = ct.confessiontagId
                 where s.label='Pending'
                 group by c.id, u.username, c.title, c.body,  c.createdAt 
                 order by c.id desc`
@@ -95,7 +95,7 @@ class ConfessionRepository{
                 c.createdAt as submittedOn, executor.username as rejectedBy, cts.executedAt as rejectedAt from confession c
                 left join confessiontag ct on ct.confessionId = c.id
                 left join tag t on t.id = ct.confessionTagId
-                inner join confesssionTimestamp cts on cts.confessionId = c.id
+                inner join confesssiontimestamp cts on cts.confessionId = c.id
                 left join timestamptype ty on ty.id = cts.timestampTypeId
                 left join user confessor on c.userId = confessor.Id
                 left join user executor on cts.userId = executor.Id
@@ -135,9 +135,9 @@ class ConfessionRepository{
         try {
             const [result] = await this.pool.query(
                 `
-                insert into confessionReaction (confessionId, reactorId, reactionTypeId, reactionTimestamp)
+                insert into confessionReaction (confessionId, reactorId, reactiontypeId, reactionTimestamp)
                 value 
-                (?, ?, (select id from reactionType r where r.label=?), now())
+                (?, ?, (select id from reactiontype r where r.label=?), now())
                 `, 
                 [confessionId, reactorId, reaction]
             ); 
@@ -164,7 +164,7 @@ class ConfessionRepository{
                 userreaction as (
                     select cr.confessionId as confessionId, rt.label as reaction
                     from confessionreaction cr 
-                    join reactiontype rt on rt.id = cr.reactionTypeid
+                    join reactiontype rt on rt.id = cr.reactiontypeid
                     where cr.reactorId = ?
                     order by cr.reactiontimestamp desc
                 )
@@ -178,6 +178,7 @@ class ConfessionRepository{
                 left join reactiontype rt on rt.id = cr.reactiontypeId
                 inner join confessiontags ct on ct.confessionId = c.id
                 left join userreaction ur on ur.confessionId = c.id
+                where c.statusId = (select id from status s where s.label = 'Published')
                 group by c.id, c.title, c.body, c.createdAt, ct.confessionId
                 order by c.id desc 
                 `, 
@@ -197,7 +198,7 @@ class ConfessionRepository{
      * @param {string} label - The label that we want to query for
      * @returns {Promise<number>} - The pending status ID from status table
      */
-    async _findStatusId(connection, label) {
+    async _findOrCreateStatusId(connection, label) {
         const [result] = await connection.query(
             `
             SELECT id from status 
@@ -206,7 +207,17 @@ class ConfessionRepository{
             `, 
             [label]
         ); 
-        //TODO: handle when Pending is not yet created 
+        if (result.length === 0) {
+            const [newRes] = await connection.query(
+                `
+                INSERT INTO status (label, isActive)
+                VALUES 
+                (?, 1)
+                `, 
+                [label]
+            );
+            return newRes.insertId;
+        }
         return result[0].id || null;
     }
 
@@ -266,9 +277,9 @@ class ConfessionRepository{
         try {
             await connection.query(
                 `
-                insert into confesssionTimestamp (userId, confessionId, timestamptypeId, executedAt) 
+                insert into confesssiontimestamp (userId, confessionId, timestamptypeId, executedAt) 
                 values 
-                (?, ?, (select id from timestampType a where a.label = ?), now());
+                (?, ?, (select id from timestamptype a where a.label = ?), now());
                 `, 
                 [userId, confessionId, timestampType]
             ); 

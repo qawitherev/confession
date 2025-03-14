@@ -15,7 +15,7 @@ group_concat(tag.label separator ', ') as tags
 from confession 
 left join user on confession.userId = user.id
 left join status on confession.statusId = status.id
-left join confessionTag on confession.id = confessiontag.confessionId
+left join confessiontag on confession.id = confessiontag.confessionId
 left join tag on confessiontag.confessionTagId = tag.id
 where status.label = 'Published'
 group by 
@@ -34,10 +34,10 @@ confession.createdAt
 FROM user 
 INNER JOIN confession ON 
     user.id = confession.userId
-LEFT JOIN confessionTag ON
-    confession.id = confessionTag.confessionId
+LEFT JOIN confessiontag ON
+    confession.id = confessiontag.confessionId
 LEFT JOIN tag ON 
-    tag.id = confessionTag.confessionTagId
+    tag.id = confessiontag.confessiontagId
 LEFT JOIN status ON 
     confession.statusId = status.id
 WHERE 
@@ -82,10 +82,10 @@ VALUES
 FROM user confessor
 INNER JOIN confession ON 
     confessor.id = confession.userId
-LEFT JOIN confessionTag ON
-    confession.id = confessionTag.confessionId
+LEFT JOIN confessiontag ON
+    confession.id = confessiontag.confessionId
 LEFT JOIN tag ON 
-    tag.id = confessionTag.confessionTagId
+    tag.id = confessiontag.confessiontagId
 LEFT JOIN status ON 
     confession.statusId = status.id
 LEFT JOIN confesssiontimestamp ON 
@@ -114,10 +114,10 @@ GROUP BY
 FROM user confessor
 INNER JOIN confession ON 
     confessor.id = confession.userId
-LEFT JOIN confessionTag ON
-    confession.id = confessionTag.confessionId
+LEFT JOIN confessiontag ON
+    confession.id = confessiontag.confessionId
 LEFT JOIN tag ON 
-    tag.id = confessionTag.confessionTagId
+    tag.id = confessiontag.confessiontagId
 LEFT JOIN status ON 
     confession.statusId = status.id
 LEFT JOIN confesssiontimestamp ON 
