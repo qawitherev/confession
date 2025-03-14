@@ -38,12 +38,13 @@ class UserService {
                 error.statusCode = 401; 
                 throw error; 
             }
-            const { id } = loginUser;
+            const { id, userType } = loginUser;
             const userForToken = {id: id, username: username}
             const token = JWToken.generateToken(userForToken);
             return {
                 userId: id, 
                 username, 
+                userType,
                 token
             };
         } catch (err) {

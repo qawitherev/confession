@@ -84,11 +84,13 @@ class UserRepository {
     try {
       const [result] = await this.pool.query(
         `
-                SELECT id, username, password 
-                FROM user 
-                WHERE username = ? AND 
-                password = ?
-                `,
+          SELECT u.id, ut.label as userType
+          FROM user u
+          join usertype ut on ut.id = u.userTypeId
+          WHERE username = ? AND 
+          password = ?
+
+        `,
         [username, hashedPassword]
       );
       return result[0] || null;
