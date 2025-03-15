@@ -2,7 +2,7 @@
  * Repository class to handle database operation 
  * for the table {Confession}, {ConfessionTag} {ConfessionTimestamp}, 
  * @author Abdul Qawi Bin Kamran
- * @version 0.0.1
+ * @version 0.0.5
  */
 
 
@@ -188,6 +188,37 @@ class ConfessionRepository{
         } catch (err) {
             throw err; 
         }
+    }
+
+    /**
+     * This query is for user to see their own confession
+     * @param {string} status all status except Published 
+     * @param {number} userId 
+     * @returns 
+     */
+    async findConfessionsForUser(status, userId) {
+        try {
+            const [result] = await this.pool.query(
+                `
+                select c.id, c.body, c.title, c.createdAt, cts.executedAt, group_concat(t.label separator ', ') as tags from confession c 
+                join confessiontag ct on ct.confessionId = c.id
+                join tag t on ct.confessionTagId = t.id
+                join status s on s.id = c.statusId
+                left join confesssiontimestamp cts on cts.confessionId = c.id
+                left join timestamptype tt on tt.id = cts.timestampTypeId
+                where s.label = ? and c.userId = ?
+                group by c.id, c.body, c.title, c.createdAt, cts.executedAt, tt.label
+                `, 
+                [status, userId]
+            ); 
+            return result; 
+        } catch (err) {
+            throw err; 
+        }
+    }
+
+    async findPublishedConfessionsForUser(userId) {
+        
     }
 
     /**
