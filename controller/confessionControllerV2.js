@@ -106,6 +106,10 @@ class ConfessionController {
             res.status(200).json(ResponseHandler.error(`Something went wrong`, 500, err.message));
         }
     }
+
+    getConfessionsForUser = async (req, res) => {
+        
+    }
 }
 
 module.exports = ConfessionController;

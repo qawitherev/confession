@@ -96,6 +96,20 @@ class ConfessionService {
         }
     }
 
+    async getConfessionsForUser(status, userId) {
+        try {
+            if (status === 'Published') {
+                const confessions = await this.confessionRepository.findPublishedConfessionsForUser(userId); 
+                return confessions; 
+            } else {
+                const confessions = await this.confessionRepository.findConfessionsForUser(userId, status); 
+                return confessions; 
+            }
+        } catch (err) { 
+            throw err; 
+        }
+    }
+
 }
 
 module.exports = ConfessionService;

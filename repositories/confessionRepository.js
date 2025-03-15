@@ -5,6 +5,8 @@
  * @version 0.0.5
  */
 
+const { REACT_TYPES } = require("../utils/constants");
+
 
 class ConfessionRepository{
     constructor(pool) {
@@ -133,9 +135,17 @@ class ConfessionRepository{
 
     async reactConfession(confessionId, reactorId, reaction) {
         try {
+            const [reactionTypes] = await this.pool.query(
+                `
+                select label from reactiontype r
+                `
+            );
+            if (reactionTypes.length !== REACT_TYPES.length) {
+                await this._initReactionTypes();
+            }
             const [result] = await this.pool.query(
                 `
-                insert into confessionReaction (confessionId, reactorId, reactiontypeId, reactionTimestamp)
+                insert into confessionreaction (confessionId, reactorId, reactiontypeId, reactiontimestamp)
                 value 
                 (?, ?, (select id from reactiontype r where r.label=?), now())
                 `, 
@@ -217,8 +227,46 @@ class ConfessionRepository{
         }
     }
 
+    /**
+     * This query is for user to see their published confessions 
+     * @param {number} userId 
+     * @returns 
+     */
     async findPublishedConfessionsForUser(userId) {
-        
+        try {
+            const [result] = await this.pool.query(
+                `
+                with user_reaction as (
+                select cr.confessionId, rt.label as reaction from confessionreaction cr 
+                join reactiontype rt on rt.id = cr.reactionTypeId
+                ),
+
+                confession_tags as (
+                select ct.confessionId, group_concat(t.label separator ', ') as tags from confessiontag ct 
+                join tag t on t.id = ct.confessionTagId
+                group by ct.confessionId
+                )
+
+                select c.id, c.body, c.title, c.createdAt, cts.executedAt,
+                sum(case when user_reaction.reaction = 'Relate' then 1 else 0 end) as relate_count, 
+                sum(case when user_reaction.reaction = 'Not Relate' then 1 else 0 end) as not_relate_count,
+                confession_tags.tags as tags from confession c 
+                join confessiontag ct on ct.confessionId = c.id
+                join tag t on ct.confessionTagId = t.id
+                join status s on s.id = c.statusId
+                join confesssiontimestamp cts on cts.confessionId = c.id
+                join timestamptype tt on tt.id = cts.timestampTypeId
+                left join user_reaction on user_reaction.confessionId = c.id
+                left join confession_tags on confession_tags.confessionId = c.id
+                where s.label = 'Published' and c.userId = ?
+                group by c.id, c.body, c.title, c.createdAt, cts.executedAt, tt.label
+                `, 
+                [userId]
+            ); 
+            return result; 
+        } catch (err) {
+            throw err; 
+        }
     }
 
     /**
@@ -316,6 +364,34 @@ class ConfessionRepository{
             ); 
         } catch (err) {
             throw err; 
+        }
+    }
+
+    /**
+     * * This function is to initialize the reaction types in the database
+     * * It checks if the reaction types already exist in the database
+     */
+    async _initReactionTypes() {
+        const vals = REACT_TYPES.map(type => `('${type}')`).join(', ');
+        const conn = await this.pool.getConnection();
+        await conn.beginTransaction();
+        try {
+            await conn.query(`
+                delete from reactiontype
+                `)
+            await conn.query(
+                `
+                insert into reactiontype (label) values 
+                ${vals}
+                `, 
+                []
+            )
+            await conn.commit();
+        } catch (err) {
+            conn.rollback();
+            throw err; 
+        } finally {
+            conn.release(); 
         }
     }
 }
