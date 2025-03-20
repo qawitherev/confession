@@ -207,6 +207,7 @@ class ConfessionRepository{
      * @returns 
      */
     async findConfessionsForUser(status, userId) {
+        console.log(status, userId);
         try {
             const [result] = await this.pool.query(
                 `

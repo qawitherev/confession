@@ -44,6 +44,7 @@ confessionRouter.post('/publishConfession', JWToken.verifyToken, ConfessionMiddl
 confessionRouter.post('/rejectConfession', JWToken.verifyToken, ConfessionMiddlewareV2.checkAdmin, ConfessionMiddlewareV2.updateConfessionStatusMW, confessionController.rejectConfession); 
 confessionRouter.get('/getConfessions', JWToken.verifyToken, ConfessionMiddlewareV2.checkUser, confessionController.getConfessions);
 confessionRouter.post('/reactConfession', JWToken.verifyToken, ConfessionMiddlewareV2.checkUser, ConfessionMiddlewareV2.reactConfessionMW, confessionController.reactConfession); 
+confessionRouter.get('/getConfessionsForUser', JWToken.verifyToken, ConfessionMiddlewareV2.checkUser, confessionController.getConfessionsForUser);
 
 
 

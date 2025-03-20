@@ -102,7 +102,7 @@ class ConfessionService {
                 const confessions = await this.confessionRepository.findPublishedConfessionsForUser(userId); 
                 return confessions; 
             } else {
-                const confessions = await this.confessionRepository.findConfessionsForUser(userId, status); 
+                const confessions = await this.confessionRepository.findConfessionsForUser(status, userId); 
                 return confessions; 
             }
         } catch (err) { 
