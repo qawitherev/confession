@@ -25,6 +25,29 @@ async function verifyConnection() {
     }
 }
 
+//TODO: implement this function
+async function initStaticData() {
+    try {
+        const connection = await pool.getConnection();
+        await connection.beginTransaction();
+    } catch (err) {
+        await connection.rollback();
+        console.error('Error initializing static data:', err);
+    } finally {
+        await connection.release();
+    }
+    
+    /**
+     * this function is used to initialize static data in the database.
+     * data is stored inside constants.js
+     * involved tables
+     * - status
+     * - reactiontype
+     * - usertype
+     * - timestamptype
+     */
+}
+
 async function verifyRedis() {
     try {
         await redisClient.connect();
