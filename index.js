@@ -11,6 +11,7 @@ const routerV2 = require('./routes/routerV2');
 const pool = require('./config/database');
 const { swaggerUI, swaggerSpec } = require('./routes/swagger');
 const redisClient = require('./config/redis');
+const StaticDataInit = require('./repositories/staticDataRepository');
 
 const app = express(); 
 const PORT = process.env.PORT || 3000;
@@ -25,27 +26,14 @@ async function verifyConnection() {
     }
 }
 
-//TODO: implement this function
 async function initStaticData() {
     try {
-        const connection = await pool.getConnection();
-        await connection.beginTransaction();
+        const dataInit = new StaticDataInit(pool);
+        await dataInit.initializeStaticData();
     } catch (err) {
-        await connection.rollback();
         console.error('Error initializing static data:', err);
-    } finally {
-        await connection.release();
-    }
+    } 
     
-    /**
-     * this function is used to initialize static data in the database.
-     * data is stored inside constants.js
-     * involved tables
-     * - status
-     * - reactiontype
-     * - usertype
-     * - timestamptype
-     */
 }
 
 async function verifyRedis() {
@@ -58,6 +46,7 @@ async function verifyRedis() {
 
 verifyConnection();
 verifyRedis();
+initStaticData();
 
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({extended: true}));

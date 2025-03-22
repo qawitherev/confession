@@ -5,7 +5,7 @@
  * @version 0.0.6
  */
 
-const { REACT_TYPES, TIMESTAMP_TYPES, CONFESSION_STATUS } = require("../utils/constants");
+const { REACT_TYPES, TIMESTAMP_TYPES, STATUS: CONFESSION_STATUS } = require("../utils/constants");
 
 class ConfessionRepository {
   constructor(pool) {

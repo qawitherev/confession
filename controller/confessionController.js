@@ -204,6 +204,8 @@ const getPendingStatusId = async () => {
     return rows[0].id;
 }
 
+
+
 module.exports = {
     createConfession,
     getConfessions,
