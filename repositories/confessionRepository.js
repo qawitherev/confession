@@ -5,7 +5,11 @@
  * @version 0.0.6
  */
 
-const { REACT_TYPES, TIMESTAMP_TYPES, STATUS: CONFESSION_STATUS } = require("../utils/constants");
+const {
+  REACT_TYPES,
+  TIMESTAMP_TYPES,
+  STATUS: CONFESSION_STATUS,
+} = require("../utils/constants");
 
 class ConfessionRepository {
   constructor(pool) {
@@ -251,15 +255,13 @@ class ConfessionRepository {
     const connection = await this.pool.getConnection();
     await connection.beginTransaction();
     try {
-      // check if deleted already inside timestamptype
-      this._initTimestampTypes(connection); 
-      this._initConfessionStatus(connection);
       // check ownership
       const [c] = await connection.query(
         `
-                select from confession c 
-                where c.id = ?
-                `,
+        select * from confession c
+        join status s on s.id = c.statusId 
+        where c.id = ?
+        `,
         [confessionId]
       );
       if (c.length === 0) {
@@ -274,25 +276,35 @@ class ConfessionRepository {
         );
         notFoundErr.statusCode = 403;
         throw notFoundErr;
+      } else if (c[0].label === "Deleted") {
+        const notFoundErr = new Error(
+          `Confession with id ${confessionId} already deleted`
+        );
+        notFoundErr.statusCode = 409;
+        throw notFoundErr;
+
       }
-      // soft delete confession by setting {confession}.[deletedAt] = now()
+      // soft delete confession by setting {confession}.[deletedAt] = now() and set statusId into deleted 
       await connection.query(
         `
-                update confession c 
-                set c.deletedAt = now()
-                where c.id = ?
-                `,
+        update confession c 
+        set c.deletedAt = now(), c.statusId = (select id from status s where s.label = 'Deleted')
+        where c.id = ?
+        `,
         [confessionId]
       );
 
       // insert into confessiontimestamp (userId, confessionId, timestampTypeId, executedAt)
       await connection.query(
         `
-                insert into confessiontimestamp (userId, confessionId, timestampTypeId, executedAt)
+                insert into confesssiontimestamp (userId, confessionId, timestampTypeId, executedAt)
                 values
-                (?, ?, (select id from timestamptype tt where tt.label = 'Deleted'), now())
-                `
+                (?, ?, (select tt.id from timestamptype tt where tt.label = 'Deleted'), now())
+                `, 
+        [userId, confessionId]
       );
+      await connection.commit();
+      return confessionId;
     } catch (err) {
       await connection.rollback();
       throw err;
@@ -490,7 +502,7 @@ class ConfessionRepository {
       );
       if (res.length === TIMESTAMP_TYPES.length) {
         return;
-      };
+      }
       const vals = TIMESTAMP_TYPES.map((type) => `('${type}', 1)`).join(", ");
       await connection.query(
         `
@@ -512,30 +524,30 @@ class ConfessionRepository {
 
   async _initConfessionStatus(connection) {
     try {
-        const [res] = await connection.query(
-            `
+      const [res] = await connection.query(
+        `
             select id from status where isActive = 1
             `
-        ); 
-        if (res.length === CONFESSION_STATUS.length) {
-            return;
-        }
-        const vals = CONFESSION_STATUS.map((type) => `('${type}', 1)`).join(", ");
-        await connection.query(
-            `
+      );
+      if (res.length === CONFESSION_STATUS.length) {
+        return;
+      }
+      const vals = CONFESSION_STATUS.map((type) => `('${type}', 1)`).join(", ");
+      await connection.query(
+        `
             delete from status
             `,
-            []
-        );
-        await connection.query(
-            `
+        []
+      );
+      await connection.query(
+        `
             insert into status (label, isActive) values 
             ${vals}
             `,
-            []
-        );
+        []
+      );
     } catch (err) {
-        throw err;
+      throw err;
     }
   }
 }

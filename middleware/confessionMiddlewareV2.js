@@ -1,4 +1,4 @@
-const { body, validationResult } = require("express-validator");
+const { body, param, validationResult } = require("express-validator");
 const ResponseHandler = require("../controller/responseHandler");
 const { UserTypeAuth } = require("../security/previlege");
 
@@ -17,6 +17,11 @@ class ConfessionMiddlewareV2 {
         return value;
       }), 
       this.handleValidationErrors,
+    ];
+
+    static sanitizeDeleteConfessionMW = [
+      param('id').trim().escape(),
+      this.handleValidationErrors
     ];
 
     static updateConfessionStatusMW = [

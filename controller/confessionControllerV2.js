@@ -216,6 +216,22 @@ class ConfessionController {
         .json(ResponseHandler.error(`Something went wrong`, 500, err.message));
     }
   };
+
+  deleteConfession = async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.id;
+    try {
+      await this.confessionService.deleteConfession(userId, id);
+      res
+        .status(200)
+        .json(ResponseHandler.success(`Confession deleted`, 200, null));
+    } catch (err) {
+      const statusCode = err.statusCode || 500;
+      res
+        .status(statusCode)
+        .json(ResponseHandler.error(`Something went wrong`, 500, err.message));
+    }
+  }
 }
 
 module.exports = ConfessionController;

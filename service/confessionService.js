@@ -110,6 +110,14 @@ class ConfessionService {
         }
     }
 
+    async deleteConfession(userId, confessionId) {
+        try {
+            await this.confessionRepository.deleteConfession(userId, confessionId); 
+        } catch (err) {
+            throw err; 
+        }
+    }
+
 }
 
 module.exports = ConfessionService;
