@@ -10,6 +10,7 @@ const {
   TIMESTAMP_TYPES,
   STATUS: CONFESSION_STATUS,
 } = require("../utils/constants");
+const { getTimestampTypeForStatus } = require("../utils/misc");
 
 class ConfessionRepository {
   constructor(pool) {
@@ -225,25 +226,76 @@ class ConfessionRepository {
    */
   async findConfessionsForUser(status, userId) {
     console.log(status, userId);
+    const timestamptype = getTimestampTypeForStatus(status);
     try {
       const [result] = await this.pool.query(
         `
-                select c.id, c.body, c.title, c.createdAt, cts.executedAt, group_concat(t.label separator ', ') as tags from confession c 
-                join confessiontag ct on ct.confessionId = c.id
-                join tag t on ct.confessionTagId = t.id
-                join status s on s.id = c.statusId
-                left join confesssiontimestamp cts on cts.confessionId = c.id
-                left join timestamptype tt on tt.id = cts.timestampTypeId
-                where s.label = ? and c.userId = ?
-                group by c.id, c.body, c.title, c.createdAt, cts.executedAt, tt.label
-                `,
-        [status, userId]
+        with confession_tags as (
+                select ct.confessionId, group_concat(t.label separator ', ') as tags from confessiontag ct 
+                join tag t on t.id = ct.confessionTagId
+                group by ct.confessionId
+                ),
+        executed_at as (
+        	select cts.confessionId, cts.executedAt from confesssiontimestamp cts 
+        	where cts.timestampTypeId = (select id from timestamptype where label = ?)
+        	order by cts.id desc 
+        )
+        select c.id, c.body, c.title, c.createdAt, executed_at.executedAt, confession_tags.tags as tags from confession c 
+        join confession_tags on c.id = confession_tags.confessionId
+        join status s on s.id = c.statusId
+        left join executed_at on c.id = executed_at.confessionId
+        where s.label = ? and c.userId = ?
+        order by executed_at.executedAt desc
+        `,
+        [timestamptype, status, userId]
       );
       return result;
     } catch (err) {
       throw err;
     }
   }
+
+    /**
+   * This query is for user to see their published confessions
+   * @param {number} userId
+   * @returns
+   */
+    async findPublishedConfessionsForUser(userId) {
+      try {
+        const [result] = await this.pool.query(
+          `
+                  with user_reaction as (
+                  select cr.confessionId, rt.label as reaction from confessionreaction cr 
+                  join reactiontype rt on rt.id = cr.reactionTypeId
+                  ),
+  
+                  confession_tags as (
+                  select ct.confessionId, group_concat(t.label separator ', ') as tags from confessiontag ct 
+                  join tag t on t.id = ct.confessionTagId
+                  group by ct.confessionId
+                  )
+  
+                  select c.id, c.body, c.title, c.createdAt, cts.executedAt,
+                  sum(case when user_reaction.reaction = 'Relate' then 1 else 0 end) as relate_count, 
+                  sum(case when user_reaction.reaction = 'Not Relate' then 1 else 0 end) as not_relate_count,
+                  confession_tags.tags as tags from confession c 
+                  join confessiontag ct on ct.confessionId = c.id
+                  join tag t on ct.confessionTagId = t.id
+                  join status s on s.id = c.statusId
+                  join confesssiontimestamp cts on cts.confessionId = c.id
+                  join timestamptype tt on tt.id = cts.timestampTypeId
+                  left join user_reaction on user_reaction.confessionId = c.id
+                  left join confession_tags on confession_tags.confessionId = c.id
+                  where s.label = 'Published' and c.userId = ?
+                  group by c.id, c.body, c.title, c.createdAt, cts.executedAt, tt.label
+                  `,
+          [userId]
+        );
+        return result;
+      } catch (err) {
+        throw err;
+      }
+    }
 
   /**
    * set {confession}.[delete] = now()
@@ -299,7 +351,7 @@ class ConfessionRepository {
         `
                 insert into confesssiontimestamp (userId, confessionId, timestampTypeId, executedAt)
                 values
-                (?, ?, (select tt.id from timestamptype tt where tt.label = 'Deleted'), now())
+                (?, ?, (select tt.id from timestamptype tt where tt.label = 'Delete'), now())
                 `, 
         [userId, confessionId]
       );
@@ -310,48 +362,6 @@ class ConfessionRepository {
       throw err;
     } finally {
       connection.release();
-    }
-  }
-
-  /**
-   * This query is for user to see their published confessions
-   * @param {number} userId
-   * @returns
-   */
-  async findPublishedConfessionsForUser(userId) {
-    try {
-      const [result] = await this.pool.query(
-        `
-                with user_reaction as (
-                select cr.confessionId, rt.label as reaction from confessionreaction cr 
-                join reactiontype rt on rt.id = cr.reactionTypeId
-                ),
-
-                confession_tags as (
-                select ct.confessionId, group_concat(t.label separator ', ') as tags from confessiontag ct 
-                join tag t on t.id = ct.confessionTagId
-                group by ct.confessionId
-                )
-
-                select c.id, c.body, c.title, c.createdAt, cts.executedAt,
-                sum(case when user_reaction.reaction = 'Relate' then 1 else 0 end) as relate_count, 
-                sum(case when user_reaction.reaction = 'Not Relate' then 1 else 0 end) as not_relate_count,
-                confession_tags.tags as tags from confession c 
-                join confessiontag ct on ct.confessionId = c.id
-                join tag t on ct.confessionTagId = t.id
-                join status s on s.id = c.statusId
-                join confesssiontimestamp cts on cts.confessionId = c.id
-                join timestamptype tt on tt.id = cts.timestampTypeId
-                left join user_reaction on user_reaction.confessionId = c.id
-                left join confession_tags on confession_tags.confessionId = c.id
-                where s.label = 'Published' and c.userId = ?
-                group by c.id, c.body, c.title, c.createdAt, cts.executedAt, tt.label
-                `,
-        [userId]
-      );
-      return result;
-    } catch (err) {
-      throw err;
     }
   }
 
