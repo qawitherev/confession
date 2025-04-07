@@ -63,9 +63,9 @@ class FeatureService {
         const fname = await this.featureRepository.updateFeatureStatus(featureId, status, updator);
         const keyExist = await redisClient.exists(`feature: ${fname}`);
         if (keyExist) {
-            await redisClient.set(`feature: ${featureId}`, status.toString());
+            await redisClient.set(`feature: ${fname}`, status.toString());
         } else {
-            await redisClient.setEx(`feature: ${featureId}`, 60 * 60, status.toString());
+            await redisClient.setEx(`feature: ${fname}`, 60 * 60, status.toString());
         }
         return fname;
     } catch (err) {

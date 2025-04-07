@@ -61,7 +61,7 @@ class FeatureController {
             const fname = await this.featureService.updateFeatureStatus(id, convertedStatus, updator);
             res
                 .status(200)
-                .json(ResponseHandler.success(`Feature status updated`, 200, `Updated feature ${fname.name} to ${status}`));
+                .json(ResponseHandler.success(`Feature status updated`, 200, `Updated feature ${fname} to ${status}`));
         } catch (err) {
             const statusCode = err.statusCode || 500;
             res

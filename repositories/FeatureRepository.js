@@ -78,7 +78,7 @@ class FeatureRepository {
                 notFoundError.statusCode = 404;
                 throw notFoundError;
             } 
-            return fname[0]; 
+            return fname[0].name; 
         } catch (err) {
             throw err;
         }
