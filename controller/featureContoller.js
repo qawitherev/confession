@@ -24,7 +24,7 @@ class FeatureController {
             const statusCode = err.statusCode || 500;
             res
                 .status(statusCode)
-                .json(ResponseHandler.error(`Something went wrong`, 500, err.message));
+                .json(ResponseHandler.error(`Something went wrong`, statusCode, err.message));
         }
     }
 }

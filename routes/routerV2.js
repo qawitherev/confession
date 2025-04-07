@@ -13,6 +13,7 @@ const ConfessionMiddlewareV2 = require('../middleware/confessionMiddlewareV2');
 const FeatureRepository = require('../repositories/FeatureRepository');
 const FeatureService = require('../service/featureService');
 const FeatureController = require('../controller/featureContoller');
+const FeatureToggleMW = require('../middleware/featureToggleMiddleware');
 
 //DEPENDECIES INJECTION SETUP 
 //user
@@ -32,6 +33,10 @@ const featureController = new FeatureController(featureService);
 
 //END 
 
+//FACTORY MIDDLEWARE SETUP
+//Feature 
+const featureToggle = new FeatureToggleMW(featureService);
+
 
 //user routes
 const userRouter = express.Router();
@@ -50,7 +55,7 @@ confessionRouter.get('/getPublishedConfessions', JWToken.verifyToken, Confession
 confessionRouter.get('/getRejectedConfessions', JWToken.verifyToken, ConfessionMiddlewareV2.checkAdmin, confessionController.getRejectedConfessions);
 confessionRouter.post('/publishConfession', JWToken.verifyToken, ConfessionMiddlewareV2.checkAdmin, ConfessionMiddlewareV2.updateConfessionStatusMW, confessionController.publishConfession); 
 confessionRouter.post('/rejectConfession', JWToken.verifyToken, ConfessionMiddlewareV2.checkAdmin, ConfessionMiddlewareV2.updateConfessionStatusMW, confessionController.rejectConfession); 
-confessionRouter.get('/getConfessions', JWToken.verifyToken, ConfessionMiddlewareV2.checkUser, confessionController.getConfessions);
+confessionRouter.get('/getConfessions', featureToggle.isFeatureEnabled('get-confessions'), JWToken.verifyToken, ConfessionMiddlewareV2.checkUser, confessionController.getConfessions);
 confessionRouter.post('/reactConfession', JWToken.verifyToken, ConfessionMiddlewareV2.checkUser, ConfessionMiddlewareV2.reactConfessionMW, confessionController.reactConfession); 
 confessionRouter.get('/getConfessionsForUser', JWToken.verifyToken, ConfessionMiddlewareV2.checkUser, confessionController.getConfessionsForUser);
 confessionRouter.delete('/deleteConfession/:id', JWToken.verifyToken, ConfessionMiddlewareV2.checkUser, ConfessionMiddlewareV2.sanitizeDeleteConfessionMW, confessionController.deleteConfession);
