@@ -5,6 +5,8 @@
  * @version 0.0.1
  */
 
+const redisClient = require("../config/redis");
+
 class FeatureService {
     constructor(featureRepository) {
         this.featureRepository = featureRepository;
@@ -17,12 +19,20 @@ class FeatureService {
      */
     async getFeatureStatus(feature) {
         try {
+            //check first in redis befire hitting db 
+            const redisRes = await redisClient.get(`feature:${feature}`);
+            if (redisRes) {
+                return redisRes === 'true' ? true : false;
+            }
+            
+            //if can't find, fall back to db
             const res = await this.featureRepository.findFeatureStatus(feature);
             if (res.length === 0) {
                 const notFoundError = new Error(`Feature ${feature} not found`);
                 notFoundError.statusCode = 404;
                 throw notFoundError;
             } else {
+                await redisClient.setEx(`feature: ${feature}`, 60*60, res[0].isActive.toString());
                 return res[0].isActive;
             }
         } catch (err) {
