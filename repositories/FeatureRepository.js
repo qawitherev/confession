@@ -7,6 +7,8 @@
  * @version 0.0.1
  */
 
+const redisClient = require("../config/redis");
+
 
 class FeatureRepository {
     constructor(pool) {
@@ -29,6 +31,54 @@ class FeatureRepository {
                 [feature]
             );
             return res; 
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    /**
+     * 
+     * @returns {Promise<Array>} - array of all features and their status
+     * @description - this method returns all features and their status
+     */
+    async findAllFeaturesStatus() {
+        try {
+            const [res] = await this.pool.query(
+                `
+                select f.name, f.isActive from feature f 
+                order by f.name asc 
+                `, 
+                []
+            );
+            return res; 
+        } catch (err) {
+            throw err; 
+        }
+    }
+
+    async updateFeatureStatus(featureId, status, updator) {
+        try {
+            const [res] = await this.pool.query(
+                `
+                update feature f
+                set f.isActive = ?, f.updatedAt = now(), f.updatedBy = ?
+                where f.id = ?
+                `, 
+                [status, updator, featureId]
+            ); 
+            const [fname] = await this.pool.query(
+                `
+                select f.name from feature f 
+                where f.id = ?
+                `, 
+                [featureId]
+            );
+            if (res.affectedRows === 0) {
+                const notFoundError = new Error(`Feature with id ${featureId} not found`);
+                notFoundError.statusCode = 404;
+                throw notFoundError;
+            } 
+            return fname[0]; 
         } catch (err) {
             throw err;
         }
