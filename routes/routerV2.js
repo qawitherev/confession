@@ -10,6 +10,9 @@ const ConfessionService = require('../service/confessionService');
 const ConfessionController = require('../controller/confessionControllerV2');
 const JWToken = require('../security/jsonWebToken');
 const ConfessionMiddlewareV2 = require('../middleware/confessionMiddlewareV2');
+const FeatureRepository = require('../repositories/FeatureRepository');
+const FeatureService = require('../service/featureService');
+const FeatureController = require('../controller/featureContoller');
 
 //DEPENDECIES INJECTION SETUP 
 //user
@@ -22,10 +25,15 @@ const confessionRepository = new ConfessionRepository(pool);
 const confessionService = new ConfessionService(confessionRepository);
 const confessionController = new ConfessionController(confessionService);
 
+//Feature 
+const featureRepo = new FeatureRepository(pool); 
+const featureService = new FeatureService(featureRepo);
+const featureController = new FeatureController(featureService);
+
 //END 
 
 
-//user route  
+//user routes
 const userRouter = express.Router();
 userRouter.post('/signUp', UserMiddleware.signUpMiddleware, userController.signUp); 
 userRouter.post('/login', UserMiddleware.loginMiddleware, userController.login);
@@ -33,7 +41,7 @@ userRouter.post('/logout', UserMiddleware.logoutMiddleware, userController.logou
 userRouter.get('/reactions', JWToken.verifyToken, UserMiddleware.checkUser, userController.getUserReactions); 
 userRouter.get('/getUsers', JWToken.verifyToken, UserMiddleware.checkAdmin, userController.getAllUsersPaged);
 
-//confession route 
+//confession routes
 const confessionRouter = express.Router();
 confessionRouter.post('/createConfession', JWToken.verifyToken, ConfessionMiddlewareV2.createConfessionMW, confessionController.createConfession);
 confessionRouter.get(`/getAllTags`, JWToken.verifyToken, confessionController.getAllTags);
@@ -47,9 +55,14 @@ confessionRouter.post('/reactConfession', JWToken.verifyToken, ConfessionMiddlew
 confessionRouter.get('/getConfessionsForUser', JWToken.verifyToken, ConfessionMiddlewareV2.checkUser, confessionController.getConfessionsForUser);
 confessionRouter.delete('/deleteConfession/:id', JWToken.verifyToken, ConfessionMiddlewareV2.checkUser, ConfessionMiddlewareV2.sanitizeDeleteConfessionMW, confessionController.deleteConfession);
 
+//feature routes
+const featureRouter = express.Router();
+featureRouter.get('/getFeatureStatus/:feature', JWToken.verifyToken, ConfessionMiddlewareV2.checkAdmin, featureController.getFeatureStatus);
+
 
 
 module.exports = {
     userRouter, 
-    confessionRouter
+    confessionRouter, 
+    featureRouter
 }

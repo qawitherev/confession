@@ -1,0 +1,38 @@
+/**
+ * FeatureRepository.js
+ * This file contains the FeatureRepository class, which is responsible for 
+ * interacting with the database to perform CRUD operations on the Feature model.
+ * 
+ * @author Abdul Qawi Bin Kamran 
+ * @version 0.0.1
+ */
+
+
+class FeatureRepository {
+    constructor(pool) {
+        this.pool = pool;
+    }
+
+    /**
+     * get status of a feature
+     * @param {string} feature - name of feature 
+     * @returns {Promise<boolean>} - true if feature is enabled, false otherwise
+     */
+    async findFeatureStatus(feature) {
+        try {
+            const [res] = await this.pool.query(
+                `
+                select f.name, f.isActive from feature f 
+                where f.name = ?
+                limit 1
+                `, 
+                [feature]
+            );
+            return res; 
+        } catch (err) {
+            throw err;
+        }
+    }
+}
+
+module.exports = FeatureRepository;

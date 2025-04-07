@@ -112,7 +112,7 @@ class ConfessionService {
 
     async deleteConfession(userId, confessionId) {
         try {
-            await this.confessionRepository.deleteConfession(userId, confessionId); 
+            return await this.confessionRepository.deleteConfession(userId, confessionId); 
         } catch (err) {
             throw err; 
         }

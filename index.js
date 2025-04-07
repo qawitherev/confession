@@ -53,6 +53,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors());
 app.use('/api/user', routerV2.userRouter);
 app.use('/api/confession', routerV2.confessionRouter);
+app.use('/api/feature', routerV2.featureRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 app.listen(PORT, () => {
