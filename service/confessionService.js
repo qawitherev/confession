@@ -120,4 +120,4 @@ class ConfessionService {
 
 }
 
-module.exports = ConfessionService;
+export default ConfessionService;

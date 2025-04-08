@@ -82,4 +82,4 @@ class FeatureRepository {
     }
 }
 
-module.exports = FeatureRepository;
+export default FeatureRepository;

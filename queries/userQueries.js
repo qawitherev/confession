@@ -31,4 +31,4 @@ WHERE username = ?`,
 VALUES ('User', 1);`
 };
 
-module.exports = userQueries;
+export default userQueries;

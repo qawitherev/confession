@@ -6,7 +6,7 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import routerV2 from './routes/routerV2.js';
+import { userRouter, confessionRouter, featureRouter} from './routes/routerV2.js';
 import pool from './config/database.js';
 import { swaggerUI, swaggerSpec } from './routes/swagger.js';
 import redisClient from './config/redis.js';
@@ -50,9 +50,9 @@ initStaticData();
 app.use(bodyParser.json()); 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cors());
-app.use('/api/user', routerV2.userRouter);
-app.use('/api/confession', routerV2.confessionRouter);
-app.use('/api/feature', routerV2.featureRouter);
+app.use('/api/user', userRouter);
+app.use('/api/confession', confessionRouter);
+app.use('/api/feature', featureRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 app.listen(PORT, () => {

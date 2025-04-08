@@ -139,4 +139,4 @@ class StaticDataInit {
   }
 }
 
-module.exports = StaticDataInit;
+export default StaticDataInit;

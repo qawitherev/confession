@@ -10,7 +10,7 @@ const STATUS_TIMESTAMPS_PAIRS = {
 }
 
 
-module.exports = {
+export {
     REACT_TYPES, 
     TIMESTAMP_TYPES, 
     STATUS, 

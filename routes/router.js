@@ -51,7 +51,7 @@ confessionRouter.post('/rejectConfession', publishRejectSanitize, verifyToken, c
 confessionRouter.get('/getPublishedConfessionsAdmin', verifyToken, checkAdmin, confessionController.getPublishedConfessionAdmin);
 confessionRouter.get('/getRejectedConfessionsAdmin', verifyToken, checkAdmin, confessionController.getRejectedConfessionAdmin);
 
-module.exports = {
+export {
     userRouter,
     confessionRouter
 };

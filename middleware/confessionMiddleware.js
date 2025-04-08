@@ -27,7 +27,7 @@ const publishRejectSanitize = [
   },
 ];
 
-module.exports = {
+export {
   createConfessionMW,
   publishRejectSanitize,
-};
+}

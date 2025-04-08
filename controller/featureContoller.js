@@ -6,7 +6,7 @@
  * @version 0.0.2
  */
 
-import ResponseHandler from "./responseHandler";
+import ResponseHandler from "./responseHandler.js";
 
 class FeatureController {
     constructor(featureService) {
@@ -71,4 +71,4 @@ class FeatureController {
     }
 }
 
-module.exports = FeatureController;
+export default FeatureController;

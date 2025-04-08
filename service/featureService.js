@@ -73,4 +73,4 @@ class FeatureService {
   }
 }
 
-module.exports = FeatureService;
+export default FeatureService;

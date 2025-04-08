@@ -1,4 +1,4 @@
-import ResponseHandler from "./responseHandler";
+import ResponseHandler from "./responseHandler.js";
 
 class ConfessionController {
   constructor(confessionService) {
@@ -234,4 +234,4 @@ class ConfessionController {
   };
 }
 
-module.exports = ConfessionController;
+export default ConfessionController;

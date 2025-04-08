@@ -1,4 +1,4 @@
-import ResponseHandler from "../controller/responseHandler";
+import ResponseHandler from "../controller/responseHandler.js";
 
 class UserController {
   constructor(userService) {
@@ -88,4 +88,4 @@ class UserController {
   }
 }
 
-module.exports = UserController;
+export default UserController;
