@@ -6,10 +6,6 @@
  * @author Abdul Qawi Bin Kamran 
  * @version 0.0.1
  */
-
-const redisClient = require("../config/redis");
-
-
 class FeatureRepository {
     constructor(pool) {
         this.pool = pool;

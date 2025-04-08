@@ -1,5 +1,5 @@
-const JWToken = require('../security/jsonWebToken'); // Adjust the path as necessary
-const { isValidDate } = require('../utils/dateAndTime');
+import JWToken from '../security/jsonWebToken.js';
+import { isValidDate } from '../utils/dateAndTime.js';
 
 class UserService {
     constructor(userRepository) {
@@ -108,4 +108,4 @@ class UserService {
     }
 }
 
-module.exports = UserService;
+export default UserService;

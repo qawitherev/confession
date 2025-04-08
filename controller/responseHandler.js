@@ -32,4 +32,4 @@ class ResponseHandler {
     }
 }
 
-module.exports = ResponseHandler;
+export default ResponseHandler;

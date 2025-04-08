@@ -1,4 +1,4 @@
-const ResponseHandler = require("../controller/responseHandler");
+import ResponseHandler from "../controller/responseHandler.js";
 
 class FeatureToggleMW {
     constructor(featureService) {
@@ -25,4 +25,4 @@ class FeatureToggleMW {
     }
 }
 
-module.exports = FeatureToggleMW;
+export default FeatureToggleMW;

@@ -1,9 +1,9 @@
-const { STATUS_TIMESTAMPS_PAIRS } = require("./constants");
+import { STATUS_TIMESTAMPS_PAIRS } from "./constants.js";
 
 function getTimestampTypeForStatus(status) {
     return STATUS_TIMESTAMPS_PAIRS[status] || null;
 }
 
-module.exports = {
+export {
     getTimestampTypeForStatus
 }

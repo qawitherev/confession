@@ -1,4 +1,4 @@
-const ResponseHandler = require("../controller/responseHandler");
+import ResponseHandler from "../controller/responseHandler";
 
 class UserController {
   constructor(userService) {

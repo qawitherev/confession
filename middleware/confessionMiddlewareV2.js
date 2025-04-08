@@ -1,6 +1,6 @@
-const { body, param, validationResult } = require("express-validator");
-const ResponseHandler = require("../controller/responseHandler");
-const { UserTypeAuth } = require("../security/previlege");
+import { body, param, validationResult } from "express-validator";
+import ResponseHandler from "../controller/responseHandler.js";
+import { UserTypeAuth } from "../security/previlege.js";
 
 class ConfessionMiddlewareV2 {
     static createConfessionMW = [
@@ -86,4 +86,4 @@ class ConfessionMiddlewareV2 {
     }
   }
 
-  module.exports = ConfessionMiddlewareV2;
+export default ConfessionMiddlewareV2;

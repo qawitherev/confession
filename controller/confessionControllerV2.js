@@ -1,4 +1,4 @@
-const ResponseHandler = require("./responseHandler");
+import ResponseHandler from "./responseHandler";
 
 class ConfessionController {
   constructor(confessionService) {

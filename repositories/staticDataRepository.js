@@ -6,8 +6,7 @@
  * @version: 0.0.1
  *
  */
-
-const { STATUS, REACT_TYPES, USER_TYPES, TIMESTAMP_TYPES } = require("../utils/constants");
+import { STATUS, REACT_TYPES, USER_TYPES, TIMESTAMP_TYPES } from "../utils/constants.js";
 
 class StaticDataInit {
   constructor(pool) {

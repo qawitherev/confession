@@ -1,20 +1,20 @@
-const pool = require('../config/database');
-const express = require('express');
+import pool from '../config/database.js';
+import express from 'express';
 
-const UserRepository = require('../repositories/userRepository');
-const UserService = require('../service/userService');
-const UserController = require('../controller/userControllerV2');
-const UserMiddleware = require('../middleware/userMiddlewareV2');
-const ConfessionRepository = require('../repositories/confessionRepository');
-const ConfessionService = require('../service/confessionService');
-const ConfessionController = require('../controller/confessionControllerV2');
-const JWToken = require('../security/jsonWebToken');
-const ConfessionMiddlewareV2 = require('../middleware/confessionMiddlewareV2');
-const FeatureRepository = require('../repositories/FeatureRepository');
-const FeatureService = require('../service/featureService');
-const FeatureController = require('../controller/featureContoller');
-const FeatureToggleMW = require('../middleware/featureToggleMiddleware');
-const { sanitizeId } = require('../middleware/commonMiddleware');
+import UserRepository from '../repositories/userRepository.js';
+import UserService from '../service/userService.js';
+import UserController from '../controller/userControllerV2.js';
+import UserMiddleware from '../middleware/userMiddlewareV2.js';
+import ConfessionRepository from '../repositories/confessionRepository.js';
+import ConfessionService from '../service/confessionService.js';
+import ConfessionController from '../controller/confessionControllerV2.js';
+import JWToken from '../security/jsonWebToken.js';
+import ConfessionMiddlewareV2 from '../middleware/confessionMiddlewareV2.js';
+import FeatureRepository from '../repositories/FeatureRepository.js';
+import FeatureService from '../service/featureService.js';
+import FeatureController from '../controller/featureContoller.js';
+import FeatureToggleMW from '../middleware/featureToggleMiddleware.js';
+import { sanitizeId } from '../middleware/commonMiddleware.js';
 
 //DEPENDECIES INJECTION SETUP 
 //user
@@ -69,9 +69,7 @@ featureRouter.get('/getFeatureStatus/:feature', JWToken.verifyToken, ConfessionM
 featureRouter.get('/getAllFeaturesStatus', JWToken.verifyToken, ConfessionMiddlewareV2.checkAdmin, featureController.getAllFeaturesStatus);
 featureRouter.post('/updateFeatureStatus', JWToken.verifyToken, ConfessionMiddlewareV2.checkAdmin, sanitizeId, featureController.updateFeatureStatus);
 
-
-
-module.exports = {
+export {
     userRouter, 
     confessionRouter, 
     featureRouter

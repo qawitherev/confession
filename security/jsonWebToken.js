@@ -1,7 +1,9 @@
-require("dotenv").config();
-const jwt = require("jsonwebtoken");
-const redisClient = require("../config/redis");
-const ResponseHandler = require("../controller/responseHandler");
+import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
+import redisClient from "../config/redis.js";
+import ResponseHandler from "../controller/responseHandler.js";
+
+dotenv.config();
 
 class JWToken {
   static generateToken(user) {
@@ -41,7 +43,7 @@ class JWToken {
  }
 }
 
-module.exports = JWToken;
+export default JWToken;
 
 // const generateToken = (user) => {
 //   return jwt.sign(

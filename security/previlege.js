@@ -3,8 +3,8 @@
  * @version 0.0.3
  */
 
-const pool = require("../config/database");
-const userQueries = require("../queries/userQueries");
+import pool from "../config/database.js";
+import userQueries from "../queries/userQueries.js";
 
 class UserTypeAuth {
   /**
@@ -49,7 +49,6 @@ class UserTypeAuth {
   }
 }
 
-
 //deprecated
 const checkAdmin = async (req, res, next) => {
   const { user } = req;
@@ -75,7 +74,7 @@ const checkAdmin = async (req, res, next) => {
   }
 };
 
-module.exports = {
+export {
   checkAdmin,
   UserTypeAuth
 };

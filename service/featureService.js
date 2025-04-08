@@ -4,8 +4,7 @@
  * @author Abdul Qawi Bin Kamran
  * @version 0.0.1
  */
-
-const redisClient = require("../config/redis");
+import redisClient from "../config/redis.js";
 
 class FeatureService {
   constructor(featureRepository) {

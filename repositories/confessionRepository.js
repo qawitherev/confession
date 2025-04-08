@@ -5,12 +5,12 @@
  * @version 0.0.6
  */
 
-const {
+import {
   REACT_TYPES,
   TIMESTAMP_TYPES,
-  STATUS: CONFESSION_STATUS,
-} = require("../utils/constants");
-const { getTimestampTypeForStatus } = require("../utils/misc");
+  STATUS as CONFESSION_STATUS,
+} from "../utils/constants.js";
+import { getTimestampTypeForStatus } from "../utils/misc.js";
 
 class ConfessionRepository {
   constructor(pool) {
@@ -561,7 +561,7 @@ class ConfessionRepository {
   }
 }
 
-module.exports = ConfessionRepository;
+export default ConfessionRepository;
 
 /*
     repo naming convention 

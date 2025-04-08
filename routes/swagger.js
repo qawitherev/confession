@@ -1,5 +1,5 @@
-const swaggerJSDocs = require('swagger-jsdoc');
-const swaggerUI = require('swagger-ui-express');
+import swaggerJSDocs from 'swagger-jsdoc';
+import swaggerUI from 'swagger-ui-express';
 
 const options = {
     definition: {
@@ -15,7 +15,7 @@ const options = {
 
 const swaggerSpec = swaggerJSDocs(options); 
 
-module.exports = {
+export {
     swaggerUI, 
     swaggerSpec
 }

@@ -3,10 +3,10 @@
  * This class is responsible for handling feature-related operations.
  * It interacts with the FeatureService to handle api endpoints.
  * @author Abdul Qawi Bin Kamran
- * @version 0.0.1
+ * @version 0.0.2
  */
 
-const ResponseHandler = require("./responseHandler");
+import ResponseHandler from "./responseHandler";
 
 class FeatureController {
     constructor(featureService) {

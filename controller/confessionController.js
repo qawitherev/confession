@@ -1,6 +1,6 @@
-const confessionQueries = require('../queries/confessionQueries')
-const confessionTagQueries = require("../queries/confessionTagQueries");
-const pool = require('../config/database');
+import confessionQueries from '../queries/confessionQueries.js';
+import confessionTagQueries from "../queries/confessionTagQueries.js";
+import pool from '../config/database.js';
 
 const createConfession = async (req, res) => {
     const { userId, title, body, tagIds } = req.body; 
@@ -204,9 +204,7 @@ const getPendingStatusId = async () => {
     return rows[0].id;
 }
 
-
-
-module.exports = {
+export {
     createConfession,
     getConfessions,
     getConfessionById,

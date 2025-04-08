@@ -1,8 +1,8 @@
-const { body, validationResult, header, query } = require("express-validator");
-const ResponseHandler = require("../controller/responseHandler");
-const crypto = require("crypto");
-const { UserTypeAuth } = require("../security/previlege");
-const { errorMonitor } = require("events");
+import { body, validationResult, header, query } from "express-validator";
+import ResponseHandler from "../controller/responseHandler.js";
+import crypto from "crypto";
+import { UserTypeAuth } from "../security/previlege.js";
+import { errorMonitor } from "events";
 
 class UserMiddleware {
   static signUpMiddleware = [
@@ -84,4 +84,4 @@ class UserMiddleware {
   }
 }
 
-module.exports = UserMiddleware;
+export default UserMiddleware;

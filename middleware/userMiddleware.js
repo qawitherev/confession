@@ -1,6 +1,6 @@
-const crypto = require('crypto');
-const { body, validationResult, header } = require('express-validator');
-const { logout } = require('../controller/userController');
+import crypto from 'crypto';
+import { body, validationResult, header } from 'express-validator';
+import { logout } from '../controller/userController.js';
 
 const sanitizeAndHash = [
     body('username').trim().escape(),
@@ -68,7 +68,7 @@ const sanitizeUserId = [
     }
 ];
 
-module.exports = {
+export {
     sanitizeAndHash, 
     sanitizeUserId, 
     sanitizeUserDetails, 
