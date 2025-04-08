@@ -98,6 +98,14 @@ class UserService {
             throw err; 
         }
     }
+
+    async deleteUser(userId, deletor) {
+        try {
+            await this.userRepository.deleteUserById(userId, deletor);
+        } catch (err) {
+            throw err; 
+        }
+    }
 }
 
 module.exports = UserService;

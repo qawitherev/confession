@@ -225,7 +225,6 @@ class ConfessionRepository {
    * @returns
    */
   async findConfessionsForUser(status, userId) {
-    console.log(status, userId);
     const timestamptype = getTimestampTypeForStatus(status);
     try {
       const [result] = await this.pool.query(

@@ -45,7 +45,7 @@ class FeatureRepository {
         try {
             const [res] = await this.pool.query(
                 `
-                select f.name, f.isActive from feature f 
+                select f.id, f.name, f.isActive from feature f 
                 order by f.name asc 
                 `, 
                 []
@@ -56,6 +56,7 @@ class FeatureRepository {
         }
     }
 
+    //TODO: audit trail for this one 
     async updateFeatureStatus(featureId, status, updator) {
         try {
             const [res] = await this.pool.query(

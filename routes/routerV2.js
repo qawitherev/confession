@@ -46,6 +46,8 @@ userRouter.post('/login', UserMiddleware.loginMiddleware, userController.login);
 userRouter.post('/logout', featureToggle.isFeatureEnabled('logout'), UserMiddleware.logoutMiddleware, userController.logout);
 userRouter.get('/reactions', featureToggle.isFeatureEnabled('reactions'), JWToken.verifyToken, UserMiddleware.checkUser, userController.getUserReactions); 
 userRouter.get('/getUsers', featureToggle.isFeatureEnabled('get-users'), JWToken.verifyToken, UserMiddleware.checkAdmin, userController.getAllUsersPaged);
+userRouter.delete('/deleteUser', featureToggle.isFeatureEnabled('delete-user'), UserMiddleware.deleteUserMiddleware, JWToken.verifyToken, userController.deleteUser);
+
 
 //confession routes
 const confessionRouter = express.Router();

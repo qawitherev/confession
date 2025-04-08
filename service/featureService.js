@@ -22,7 +22,7 @@ class FeatureService {
       //check first in redis befire hitting db
       const redisRes = await redisClient.get(`feature: ${feature}`);
       if (redisRes) {
-        return redisRes === "true" ? true : false;
+        return redisRes === "1" ? true : false;
       }
 
       //if can't find, fall back to db

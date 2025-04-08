@@ -1,4 +1,4 @@
-const { body, validationResult, header } = require("express-validator");
+const { body, validationResult, header, query } = require("express-validator");
 const ResponseHandler = require("../controller/responseHandler");
 const crypto = require("crypto");
 const { UserTypeAuth } = require("../security/previlege");
@@ -32,6 +32,16 @@ class UserMiddleware {
     }
     next();
   }
+
+  // middleware to sanitize query params
+  // two params, userId and deletorId
+  static deleteUserMiddleware = [
+    query('userId').trim().escape().notEmpty().withMessage('User ID is required'),
+    query('userId').isInt().withMessage('User ID must be an integer'),
+    query('deletorId').trim().escape().notEmpty().withMessage('Deletor ID is required'),
+    query('deletorId').isInt().withMessage('Deletor ID must be an integer'),
+    this.handleValidationErrors,
+  ];
 
   static checkUser = async(req, res, next) => {
     const { id } = req.user; 

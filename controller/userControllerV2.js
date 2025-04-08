@@ -75,6 +75,17 @@ class UserController {
       res.status(500).json(ResponseHandler.error(`Something went wrong`, 500, err.message));
     }
   }
+
+  deleteUser = async (req, res) => {
+    const { userId, deletorId } = req.query;
+    try {
+      await this.userService.deleteUser(userId, deletorId);
+      res.status(200).json(ResponseHandler.success(`User deleted`, 200, `User with id ${userId} has been deleted`));
+    } catch (err) {
+      const sc = err.statusCode || 500
+      res.status(sc).json(ResponseHandler.error(`Something went wrong`, sc, err.message));
+    }
+  }
 }
 
 module.exports = UserController;

@@ -56,7 +56,7 @@ class UserRepository {
                 INSERT INTO usertype (label, isActive)
                 VALUES ('Admin', 1)
                 `
-      ); 
+      );
       return result.insertId;
     } catch (err) {
       throw err;
@@ -76,7 +76,7 @@ class UserRepository {
       );
       if (result.length === 0) {
         return null;
-      } 
+      }
       return result[0].id;
     } catch (err) {
       throw err;
@@ -127,7 +127,15 @@ class UserRepository {
         order by ${sortBy} ${sortOrder}
         limit ? offset ?
         `,
-        [searchKeyword, searchKeyword, userType, startDate, endDate, pageSize, offset]
+        [
+          searchKeyword,
+          searchKeyword,
+          userType,
+          startDate,
+          endDate,
+          pageSize,
+          offset,
+        ]
       );
       const [res] = await this.pool.query(
         `
@@ -175,6 +183,66 @@ class UserRepository {
       return result || null;
     } catch (err) {
       throw err;
+    }
+  }
+
+  //TODO: audit trail for this one
+  /**
+   * soft delete user by updating user.deletedAt = now()
+   * @param {number} userId user id that is want to de deleted
+   * @param {number} deletor user id that is deleting the user
+   * @returns {Promise<void>}
+   */
+  async deleteUserById(userId, deletor) {
+    const conn = await this.pool.getConnection();
+    await conn.beginTransaction();
+    try {
+      //check if deletor is an admin
+      const [isAdmin] = await conn.query(
+        `
+        select u.id from user u 
+        where u.id = ? and u.userTypeId = (select id from usertype where usertype.label = 'Admin')
+        `,
+        [deletor]
+      );
+      // if an admin, can delete any user regardless usertype
+      if (isAdmin.length > 0) {
+        const [deleted] = await conn.query(
+          `
+            update user u 
+            set u.deletedAt = now()
+            where u.id = ?
+            `,
+          [userId]
+        );
+        await conn.commit();
+        if (deleted.affectedRows === 0) {
+          const err = new Error(`User not found`);
+          err.statusCode = 404;
+          throw err;
+        }
+      } else {
+        // normal user can only delete their own account
+        if (userId !== deletor) {
+          const err = new Error(`User can only delete their own account`);
+          err.statusCode = 403;
+          throw err;
+        }
+        await conn.query(
+          `
+          update user u 
+          set u.deletedAt = now()
+          where u.id = ?
+          `,
+          [userId]
+        );
+        await conn.commit(); 
+      }
+    } catch (err) {
+      await conn.rollback(); 
+      throw err;
+    } finally {
+      conn.release();
     }
   }
 }

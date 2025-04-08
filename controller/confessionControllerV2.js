@@ -221,10 +221,10 @@ class ConfessionController {
     const { id } = req.params;
     const userId = req.user.id;
     try {
-      const res = await this.confessionService.deleteConfession(userId, id);
+      const resp = await this.confessionService.deleteConfession(userId, id);
       res
         .status(200)
-        .json(ResponseHandler.success(`Confession deleted`, 200, res));
+        .json(ResponseHandler.success(`Confession deleted`, 200, resp));
     } catch (err) {
       const statusCode = err.statusCode || 500;
       res
