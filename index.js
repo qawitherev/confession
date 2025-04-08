@@ -3,15 +3,14 @@
     created in config/database.js
 */
 
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const router = require('./routes/router');
-const routerV2 = require('./routes/routerV2');
-const pool = require('./config/database');
-const { swaggerUI, swaggerSpec } = require('./routes/swagger');
-const redisClient = require('./config/redis');
-const StaticDataInit = require('./repositories/staticDataRepository');
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
+import routerV2 from './routes/routerV2.js';
+import pool from './config/database.js';
+import { swaggerUI, swaggerSpec } from './routes/swagger.js';
+import redisClient from './config/redis.js';
+import StaticDataInit from './repositories/staticDataRepository.js';
 
 const app = express(); 
 const PORT = process.env.PORT || 3000;
@@ -58,5 +57,5 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`); 
-}); 
+});
 
