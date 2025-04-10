@@ -1,7 +1,10 @@
-/*
-    file to turn in the server using the config 
-    created in config/database.js
-*/
+/**
+ * @file index.js
+ * @description Main entry point for the application. Sets up the server, database connection, and routes.
+ * @requires express - A web framework for Node.js.
+ * @author Abdul Qawi Bin Kamran 
+ * @version 0.0.2
+ */
 
 import express from 'express';
 import cors from 'cors';
@@ -11,9 +14,18 @@ import pool from './config/database.js';
 import { swaggerUI, swaggerSpec } from './routes/swagger.js';
 import redisClient from './config/redis.js';
 import StaticDataInit from './repositories/staticDataRepository.js';
+import https from 'https';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express(); 
 const PORT = process.env.PORT || 3000;
+const PORT_HTTPS = process.env.PORT_HTTPS || 3443;
+const __filename = fileURLToPath(import.meta.url); 
+const __dirname = path.dirname(__filename);
 
 // Verify database connection
 async function verifyConnection() {
@@ -55,7 +67,21 @@ app.use('/api/confession', confessionRouter);
 app.use('/api/feature', featureRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
+//start HTTP server on port 3000
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`); 
 });
+
+//start HTTPS server on port 3443
+try {
+    const options = {
+        key: fs.readFileSync(path.join(__dirname, 'certs', 'key.pem')),
+        cert: fs.readFileSync(path.join(__dirname, 'certs', 'cert.pem')),
+    }; 
+    https.createServer(options, app).listen(PORT_HTTPS, () => {
+        console.log(`HTTPS Server running on port ${PORT_HTTPS}`);
+    });
+} catch (err) {
+    console.error('Error starting HTTPS server:', err);
+}
 
