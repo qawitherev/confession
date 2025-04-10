@@ -20,3 +20,12 @@ logs/
 # OS
 .DS_Store
 Thumbs.db
+
+# SSL/TLS Certificates
+certs/
+*.cert
+*.key
+*.pem
+*.crt
+*.csr
+*.srl
