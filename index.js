@@ -3,7 +3,7 @@
  * @description Main entry point for the application. Sets up the server, database connection, and routes.
  * @requires express - A web framework for Node.js.
  * @author Abdul Qawi Bin Kamran 
- * @version 0.0.2
+ * @version 0.0.5
  */
 
 import express from 'express';

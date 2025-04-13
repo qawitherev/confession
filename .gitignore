@@ -16,13 +16,14 @@ yarn-error.log*
 # Logs
 logs/
 *.log
-
+````````````````````````````````````````````````````````````````````````````````````````````
 # OS
 .DS_Store
 Thumbs.db
 
 # SSL/TLS Certificates
-certs/
+certs/*
+!certs/README.md
 *.cert
 *.key
 *.pem
