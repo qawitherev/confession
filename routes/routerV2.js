@@ -38,7 +38,6 @@ const featureController = new FeatureController(featureService);
 //Feature 
 const featureToggle = new FeatureToggleMW(featureService);
 
-
 //user routes
 const userRouter = express.Router();
 userRouter.post('/signUp', featureToggle.isFeatureEnabled('sign-up'), UserMiddleware.signUpMiddleware, userController.signUp); 
