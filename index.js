@@ -73,15 +73,17 @@ app.listen(PORT, () => {
 });
 
 //start HTTPS server on port 3443
-try {
-    const options = {
-        key: fs.readFileSync(path.join(__dirname, 'certs', 'key.pem')),
-        cert: fs.readFileSync(path.join(__dirname, 'certs', 'cert.pem')),
-    }; 
-    https.createServer(options, app).listen(PORT_HTTPS, () => {
-        console.log(`HTTPS Server running on port ${PORT_HTTPS}`);
-    });
-} catch (err) {
-    console.error('Error starting HTTPS server:', err);
-}
+// ONLY USE THIS WHEN WE DON'T HAVE A REVERSE PROXY IN FRONT OF THE SERVER
+// Uncomment the following lines to enable HTTPS server
+// try {
+//     const options = {
+//         key: fs.readFileSync(path.join(__dirname, 'certs', 'key.pem')),
+//         cert: fs.readFileSync(path.join(__dirname, 'certs', 'cert.pem')),
+//     }; 
+//     https.createServer(options, app).listen(PORT_HTTPS, () => {
+//         console.log(`HTTPS Server running on port ${PORT_HTTPS}`);
+//     });
+// } catch (err) {
+//     console.error('Error starting HTTPS server:', err);
+// }
 
