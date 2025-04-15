@@ -76,8 +76,8 @@ class UserMiddleware {
   static hashPassword(req, res, next) {
     const { password } = req.body;
     req.body.hashedPassword = crypto
-      .createHash("sha-256")
-      .update(password)
+      .createHash("sha256")
+      .update(String(password))
       .digest("hex");
     delete req.body.password;
     next();
