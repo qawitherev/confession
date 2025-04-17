@@ -67,7 +67,7 @@ app.use('/api/confession', confessionRouter);
 app.use('/api/feature', featureRouter);
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 app.get('/', (req, res) => {
-    res.send('Welcome to the Confession API!'); 
+    res.send('Welcome to the CurhatSenyap API!'); 
 });
 
 //start HTTP server on port 3000
