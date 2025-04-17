@@ -73,4 +73,69 @@ Step 4: Install certs for https connection (if not using nginx)
 ********************************************
 
 Step 5: Setting up nginx
-//TODO
+1. make nginx confession config at  
+    1.1 /etc/nginx/sites-available/confession
+2. the config (self signed, we will discuss ssl cert by CA later)
+    server {
+    listen 80;
+    server_name your-domain.com www.your-domain.com;
+
+    # Redirect HTTP to HTTPS
+    location / {
+        return 301 https://$host$request_uri;
+    }
+    }
+
+    server {
+        listen 443 ssl;
+        server_name your-domain.com www.your-domain.com;
+
+        # SSL certificates
+        ssl_certificate /etc/nginx/ssl/nginx.crt;
+        ssl_certificate_key /etc/nginx/ssl/nginx.key;
+
+        # SSL configurations
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_prefer_server_ciphers on;
+        ssl_ciphers     ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM- SHA384:DHE-RSA-AES256-GCM-SHA384;
+        ssl_session_timeout 1d;
+        ssl_session_cache shared:SSL:10m;
+
+        # Proxy to your Node.js application
+        location / {
+            proxy_pass http://localhost:3000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_cache_bypass $http_upgrade;
+        }
+    }
+
+    -- remember to replace domain name with your domain
+    -- if dont have, just use ec2 public ip
+3. Create SLL cert for your nginx (self signed)
+    3.1 make this dir
+        `sudo mkdir -p /etc/nginx/ssl`
+    3.2 make ssl cert 
+        `sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.cert -subj "/CN=your-domain.com"`
+4. enable site configuration 
+    4.1 folder pointing 
+        nginx will read sites-enabled 
+        our site is inside sites-available 
+        sites-enabled points sites-available 
+        `sudo ln -s /etc/nginx/sites-available/confession /etc/nginx/sites-enabled/`
+        remove default config 
+        `sudo rm /etc/nginx/sites-enabled/default`
+    4.2 verify nginx config 
+        `sudo nginx -t`
+    4.3 restart nginx 
+    4.4 make firewall to allow port 80 and 443 
+        `sudo ufw allow 'Nginx Full`
+
+
+
+
