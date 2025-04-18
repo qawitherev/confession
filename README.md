@@ -134,7 +134,29 @@ Step 5: Setting up nginx
         `sudo nginx -t`
     4.3 restart nginx 
     4.4 make firewall to allow port 80 and 443 
-        `sudo ufw allow 'Nginx Full`
+        `sudo ufw allow 'Nginx Full'`
+
+Step 6: Get signed cert from CA (certificate authority)
+1. For this, we will use Let's Encrypt to get the cert using Certbot in Ubuntu
+2. Install Certbot
+    2.1 `sudo apt install certbot python3-certbot-nginx -y`
+3. Obtain and install SSL certificate
+    3.1 `sudo certbot --nginx -d your-domain.com -d www.your-domain.com`
+    3.2 Follow the prompts:
+        - Enter your email address for renewal notifications
+        - Agree to the terms of service
+        - Choose whether to redirect HTTP to HTTPS (recommended)
+4. Verify automatic renewal
+    4.1 `sudo systemctl status certbot.timer`
+    4.2 Test renewal process (without actually renewing): `sudo certbot renew --dry-run`
+5. Your Nginx configuration will be automatically updated with the new certificates
+6. Restart Nginx to apply changes
+    6.1 `sudo systemctl restart nginx`
+7. Test your site with HTTPS
+    7.1 Visit https://your-domain.com in a browser
+    7.2 You should see a secure connection with a valid certificate
+
+Note: Let's Encrypt certificates are valid for 90 days, but Certbot automatically sets up a renewal service that runs twice daily to check and renew certificates that are within 30 days of expiration.
 
 
 
