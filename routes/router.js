@@ -1,5 +1,6 @@
 /*
     this one file will use the controller created and defined the http method 
+    DEPRECATED: this file is deprecated and will be removed in the future
 */
 
 const express = require('express');

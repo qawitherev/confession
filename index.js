@@ -11,7 +11,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import { userRouter, confessionRouter, featureRouter} from './routes/routerV2.js';
 import pool from './config/database.js';
-import { swaggerUI, swaggerSpec } from './routes/swagger.js';
+import { swaggerUI, swaggerSpec } from './swaggerV2.js';
 import redisClient from './config/redis.js';
 import StaticDataInit from './repositories/staticDataRepository.js';
 import https from 'https';

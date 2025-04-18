@@ -42,7 +42,6 @@ class UserService {
             const userForToken = {id: id, username: username}
             const token = JWToken.generateToken(userForToken);
             return {
-                userId: id, 
                 username, 
                 userType,
                 token

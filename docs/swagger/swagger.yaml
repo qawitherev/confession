@@ -1,0 +1,7 @@
+openapi: 3.0.0
+info:
+  title: Confession-API
+  version: 0.1.0
+  description: Early version of Confession-API. Not use-ready
+paths:
+  $ref: './swagger_user.yaml#/paths/'

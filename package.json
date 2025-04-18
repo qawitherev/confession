@@ -25,6 +25,7 @@
     "redis": "^4.7.0",
     "sinon": "^19.0.2",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "yaml": "^2.7.1"
   }
 }
